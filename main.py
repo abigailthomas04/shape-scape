@@ -8,16 +8,18 @@ run = True
 screen_width = 400
 screen_height = 600
 scroll = 0
-scroll_speed = 0.05
+scroll_speed = 0.1
 initial_scroll = 0
 subX = 137.5
 subY = 475
+hopping = False
+game_over = False
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('ShapeScape')
 
 # upload images
-bg = pygame.image.load('shape-scape/img/blue_bg.jpg')
+bg = pygame.image.load('shape-scape/img/sea_bg.png')
 sand = pygame.image.load('shape-scape/img/sand.jpg')
 seaweed = pygame.image.load('shape-scape/img/seaweed.png')
 submarine = pygame.image.load('shape-scape/img/submarine.png')
@@ -36,6 +38,27 @@ class Submarine(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x    # x-coordinate of sprite's top left corner
         self.rect.y = y    # y-coordinate of sprite's top left corner
+        self.vel = 0
+
+    def update(self):
+         
+        if hopping == True:
+             
+            # GRAVITY LETS GO
+            self.vel += 0.5
+            if self.vel > 8:
+                self.vel = 8
+            if self.rect.bottom < 600:
+                self.rect.x -= int(self.vel)
+
+            if game_over == False:
+            # hopping
+                if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:    # if left mouse bar clicked
+                    self.clicked = True
+                    self.vel = -8
+                if pygame.mouse.get_pressed()[0] == 0:    # if left mouse bar not clicked
+                    self.clicked = False
+        
 
 submarine_group = pygame.sprite.Group()
 
