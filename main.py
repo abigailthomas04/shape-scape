@@ -23,12 +23,20 @@ bg = pygame.image.load('shape-scape/img/sea_bg.png')
 sand = pygame.image.load('shape-scape/img/sand.jpg')
 seaweed = pygame.image.load('shape-scape/img/seaweed.png')
 submarine = pygame.image.load('shape-scape/img/submarine.png')
+title = pygame.image.load('shape-scape/img/title.png')
+start1 = pygame.image.load('shape-scape/img/press_any_key.png')
+start2 = pygame.image.load('shape-scape/img/any_key.png')
+start3 = pygame.image.load('shape-scape/img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
 sand = pygame.transform.scale(sand, (screen_width, 50))
 seaweed = pygame.transform.scale(seaweed, (50, 50))
 submarine = pygame.transform.scale(submarine, (125, 125))
+title = pygame.transform.scale(title, (380, 60))
+start1 = pygame.transform.scale(start1, (160, 40))
+start2 = pygame.transform.scale(start2, (256, 40))
+start3 = pygame.transform.scale(start3, (256, 40))
 
 # the ship
 class Submarine(pygame.sprite.Sprite):
@@ -39,27 +47,6 @@ class Submarine(pygame.sprite.Sprite):
         self.rect.x = x    # x-coordinate of sprite's top left corner
         self.rect.y = y    # y-coordinate of sprite's top left corner
         self.vel = 0
-
-    def update(self):
-         
-        if hopping == True:
-             
-            # GRAVITY LETS GO
-            self.vel += 0.5
-            if self.vel > 8:
-                self.vel = 8
-            if self.rect.bottom < 600:
-                self.rect.x -= int(self.vel)
-
-            if game_over == False:
-            # hopping
-                if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:    # if left mouse bar clicked
-                    self.clicked = True
-                    self.vel = -8
-                if pygame.mouse.get_pressed()[0] == 0:    # if left mouse bar not clicked
-                    self.clicked = False
-        
-
 submarine_group = pygame.sprite.Group()
 
 while run: 
@@ -72,6 +59,13 @@ while run:
     # draw background
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 600))
+
+    # draw title and start words
+    screen.blit(title, (10, 50))
+    screen.blit(start1, (120, 200))
+    screen.blit(start2, (75, 300))
+    screen.blit(start3, (75, 400))
+
 
     # draw sand
     screen.blit(sand, (0, 550 + initial_scroll))
