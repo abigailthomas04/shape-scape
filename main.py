@@ -2,8 +2,19 @@
 import pygame
 from pygame import * 
 
+from pygame import mixer
+
 # initialize pygame
 pygame.init()
+
+# initalize the music
+mixer.init()
+
+# load audio files
+# mixer.music.load('song.mp3')
+
+# set volume
+# mixer/music.set_volume(0.2)
 
 # variables
 run = True
@@ -66,6 +77,9 @@ while run:
 
             # break the loop
             run = False
+
+    # play the music
+    # mixer.music.play()
 
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
