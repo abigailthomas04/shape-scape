@@ -11,10 +11,13 @@ pygame.init()
 mixer.init()
 
 # load audio files
-# mixer.music.load('song.mp3')
+mixer.music.load('shape-scape/audio/title_screen_music.mp3')
 
 # set volume
-# mixer/music.set_volume(0.2)
+mixer.music.set_volume(1)
+
+# play the music
+mixer.music.play()
 
 # variables
 run = True
@@ -78,13 +81,13 @@ while run:
             # break the loop
             run = False
 
-    # play the music
-    # mixer.music.play()
-
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
     if(pressed[K_SPACE]) == True:
         starting = True
+
+        mixer.music.pause()
+
 
     # draw background
     screen.blit(bg, (0, scroll))
@@ -106,6 +109,7 @@ while run:
 
     # until user presses SPACE BAR, title screen is drawn
     if starting == False:
+
         # draw title and start words
         screen.blit(title, (10, 50))
         screen.blit(start1, (120, 200))
