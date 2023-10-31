@@ -11,7 +11,7 @@ pygame.init()
 mixer.init()
 
 # load audio files
-mixer.music.load('shape-scape/audio/title_screen_music.mp3')
+mixer.music.load('shape-scape/audio/bg_music.mp3')
 
 # set volume
 mixer.music.set_volume(1)
@@ -85,9 +85,6 @@ while run:
     pressed = pygame.key.get_pressed()
     if(pressed[K_SPACE]) == True:
         starting = True
-
-        mixer.music.pause()
-
 
     # draw background
     screen.blit(bg, (0, scroll))
