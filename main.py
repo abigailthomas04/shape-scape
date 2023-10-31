@@ -27,8 +27,8 @@ screen_height = 600    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
 scroll_speed = 0.1     # speed of the scroll
 initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
-subX = 200           # initial x coordinate of submarine
-subY = 520            # initial y coordinate of submarine
+subX = 200             # initial x coordinate of submarine
+subY = 520             # initial y coordinate of submarine
 hopping = False        # is player hopping or still
 game_over = False      # has player hit obstacle
 starting = False       # has player pressed SPACE BAR to start
@@ -59,6 +59,8 @@ start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
 
+# finding the time passed
+time = pygame.time.get_ticks() 
 
 # the ship
 class Submarine():
