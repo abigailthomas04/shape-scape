@@ -1,22 +1,27 @@
+# import pygame library
 import pygame
 from pygame import * 
 
+# initialize pygame
 pygame.init()
 
 # variables
 run = True
-screen_width = 400
-screen_height = 600
-scroll = 0
-scroll_speed = 0.1
-initial_scroll = 0
-subX = 137.5
-subY = 475
-hopping = False
-game_over = False
-starting = False
+screen_width = 400     # width of the entire window (x-axis)
+screen_height = 600    # height of the entire window (y-axis)
+scroll = 0             # scroll for the bg
+scroll_speed = 0.1     # speed of the scroll
+initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
+subX = 137.5           # initial x coordinate of submarine
+subY = 475             # initial y coordinate of submarine
+hopping = False        # is player hopping or still
+game_over = False      # has player hit obstacle
+starting = False       # has player pressed SPACE BAR to start
 
+# draw the screen 
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+# name the screen
 pygame.display.set_caption('ShapeScape')
 
 # upload images
@@ -41,26 +46,31 @@ start3 = pygame.transform.scale(start3, (256, 40))
 
 # the ship
 class Submarine(pygame.sprite.Sprite):
+
     def __init__(self, x, y):
+
         super().__init()
         self.image = submarine
         self.rect = self.image.get_rect()
         self.rect.x = x    # x-coordinate of sprite's top left corner
         self.rect.y = y    # y-coordinate of sprite's top left corner
-        self.vel = 0
+
 submarine_group = pygame.sprite.Group()
 
+### THE MAIN LOOP ###
 while run: 
 
-     # if user clicks exit window, game quits
+    # if user clicks exit window, game quits
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+
+            # break the loop
             run = False
 
+    # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
     if(pressed[K_SPACE]) == True:
         starting = True
-
 
     # draw background
     screen.blit(bg, (0, scroll))
@@ -73,8 +83,11 @@ while run:
     screen.blit(submarine, ((subX, subY)))
     
     # draw seaweed
-    screen.blit(seaweed, (75, 540 + initial_scroll))
-    screen.blit(seaweed, (200, 530 + initial_scroll))
+    # left most seaweed
+    screen.blit(seaweed, (65, 540 + initial_scroll))
+    # middle seaweed
+    screen.blit(seaweed, (235, 530 + initial_scroll))
+    # right most seaweed
     screen.blit(seaweed, (300, 545 + initial_scroll))
 
     # until user presses SPACE BAR, title screen is drawn
@@ -85,16 +98,18 @@ while run:
         screen.blit(start2, (54, 300))
         screen.blit(start3, (75, 400))
 
-    # scroll the game
+    # scroll the background
     # scroll += scroll_speed
     if abs(scroll) > 650:
         scroll = 0
 
-    
+    # scroll the ocean floor off screen
     # initial_scroll += scroll_speed
     if abs(initial_scroll) > 100:
         initial_scroll = 100
     
+    # update the display
     pygame.display.update()
 
+# quit the window
 pygame.quit()
