@@ -69,20 +69,22 @@ while run:
 
     # draw sand
     screen.blit(sand, (0, 550 + initial_scroll))
-    
-    # draw seaweed
-    screen.blit(seaweed, (75, 550 + initial_scroll))
-    screen.blit(seaweed, (200, 550 + initial_scroll))
-    screen.blit(seaweed, (300, 550 + initial_scroll))
 
     # draw submarine
     screen.blit(submarine, ((subX, subY)))
+    
+    # draw seaweed
+    screen.blit(seaweed, (75, 540 + initial_scroll))
+    screen.blit(seaweed, (200, 530 + initial_scroll))
+    screen.blit(seaweed, (300, 545 + initial_scroll))
 
     # scroll the game
-    scroll += scroll_speed
+    # scroll += scroll_speed
     if abs(scroll) > 600:
         scroll = 0
-    initial_scroll += scroll_speed
+
+    
+    # initial_scroll += scroll_speed
     if abs(initial_scroll) > 100:
         initial_scroll = 100
     
