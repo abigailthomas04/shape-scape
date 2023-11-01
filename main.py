@@ -59,8 +59,9 @@ start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
 
-# finding the time passed
-time = pygame.time.get_ticks() 
+# time
+clock = pygame.time .Clock()
+time = clock.get_time() 
 
 # the ship
 class Submarine():
@@ -77,7 +78,7 @@ class Submarine():
     def hop(self):
 
         dy = 0
-        gravity = .05
+        gravity = .15
 
         # GRAVITY
         self.vel_y += gravity
@@ -85,7 +86,8 @@ class Submarine():
 
         self.rect.y += dy
 
-        if self.rect.bottom + dy > screen_height - 25 and starting == False:
+        if self.rect.bottom + dy > screen_height - 25:
+
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
@@ -99,7 +101,7 @@ class Submarine():
         if up_arrow[pygame.K_UP] == True:
             
             # how high player hops after pressing UP ARROW
-            self.vel_y = -1
+            self.vel_y = -2
  
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
@@ -122,7 +124,6 @@ while run:
     if (pressed[K_SPACE]) == True:
         starting = True
 
-    
     # draw background
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 600))
@@ -153,12 +154,19 @@ while run:
         screen.blit(start2, (54, 300))
         screen.blit(start3, (75, 400))
 
+    # if player goes off screen when game has started, GAME OVER
+    if starting == True:    # and submarine is off screen
+        game_over == True
+
     if starting == True:
 
         # scroll the background
         scroll += scroll_speed
         if abs(scroll) > 650:
             scroll = 0
+
+            if starting == True and game_over == True:
+                scroll_speed = 0
 
         # scroll the ocean floor off screen
         initial_scroll += scroll_speed
