@@ -75,11 +75,10 @@ class Submarine():
         self.rect.center = (x, y)
         self.vel_y = 0
 
-    # making the player hop
     def hop(self):
 
         dy = 0
-        gravity = .15    # how fast the player will fall down if not hopping
+        gravity = .15
 
         # GRAVITY
         self.vel_y += gravity
@@ -87,18 +86,15 @@ class Submarine():
 
         self.rect.y += dy
 
-        # if player goes below initial starting point, gravity stops
         if self.rect.bottom + dy > screen_height - 25:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
 
-        # turn off gravity until player starts game
         if starting == False:
             gravity = 0
 
-        # press UP ARROW to hop (this can be easily changed to a different key)
         up_arrow = pygame.key.get_pressed()
 
         # if UP ARROW is pressed, player hops up
@@ -107,10 +103,9 @@ class Submarine():
             # how high player hops after pressing UP ARROW
             self.vel_y = -2
  
-    # drawing the player onto the screen
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)    # this is the rect surrounding the player used for collision detection
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 sub = Submarine(subX, subY)
 
@@ -124,15 +119,8 @@ while run:
             # break the loop
             run = False
 
-    pressed = pygame.key.get_pressed()
-
-    # if user clickes Q, game quits
-    if (pressed[K_q]) == True:
-
-        # break the loop
-        run = False
-
     # check for user to press SPACE BAR
+    pressed = pygame.key.get_pressed()
     if (pressed[K_SPACE]) == True:
         starting = True
 
@@ -168,15 +156,17 @@ while run:
 
     # if player goes off screen when game has started, GAME OVER
     if starting == True:    # and submarine is off screen
+        game_over == True
+
+    if starting == True:
 
         # scroll the background
         scroll += scroll_speed
         if abs(scroll) > 650:
             scroll = 0
 
-            # stop scroll if GAME OVER
-            # if starting == True and game_over == True:
-                # scroll_speed = 0
+            if starting == True and game_over == True:
+                scroll_speed = 0
 
         # scroll the ocean floor off screen
         initial_scroll += scroll_speed
