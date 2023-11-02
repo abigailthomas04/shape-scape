@@ -23,13 +23,13 @@ mixer.music.play()
 # variables
 run = True
 screen_width = 400     # width of the entire window (x-axis)
-screen_height = 600    # height of the entire window (y-axis)
+screen_height = 650    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
-scroll_speed = 0.1     # speed of the scroll
+scroll_speed = 1     # speed of the scroll
 initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
 subX = 200             # initial x coordinate of submarine
 subY = 520             # initial y coordinate of submarine
-hopping = False        # is player hopping or still
+hopping = False        # is player hopping or no
 game_over = False      # has player hit obstacle
 starting = False       # has player pressed SPACE BAR to start
 
@@ -51,7 +51,7 @@ start3 = pygame.image.load('img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
-sand = pygame.transform.scale(sand, (screen_width, 50))
+sand = pygame.transform.scale(sand, (screen_width, 100))
 seaweed = pygame.transform.scale(seaweed, (50, 50))
 submarine = pygame.transform.scale(submarine, (80, 80))
 title = pygame.transform.scale(title, (380, 60))
@@ -60,7 +60,7 @@ start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
 
 # time
-clock = pygame.time .Clock()
+clock = pygame.time.Clock()
 time = clock.get_time() 
 
 # the ship
@@ -86,14 +86,14 @@ class Submarine():
 
         self.rect.y += dy
 
-        if self.rect.bottom + dy > screen_height - 25:
+        if self.rect.bottom + dy > screen_height - 70:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
 
-        if starting == False:
-            gravity = 0
+        #if starting == False:
+         #   gravity = 0
 
         up_arrow = pygame.key.get_pressed()
 
@@ -126,7 +126,7 @@ while run:
 
     # draw background
     screen.blit(bg, (0, scroll))
-    screen.blit(bg, (0, scroll - 600))
+    screen.blit(bg, (0, scroll - 650))
 
     # draw sand
     screen.blit(sand, (0, 550 + initial_scroll))
@@ -155,7 +155,7 @@ while run:
         screen.blit(start3, (75, 400))
 
     # if player goes off screen when game has started, GAME OVER
-    if starting == True:    # and submarine is off screen
+    if starting == True:    # and submarine below off screen
         game_over == True
 
     if starting == True:
@@ -171,7 +171,7 @@ while run:
         # scroll the ocean floor off screen
         initial_scroll += scroll_speed
         if abs(initial_scroll) > 100:
-            initial_scroll = 100
+            initial_scroll = 120
     
     # update the display
     pygame.display.update()
