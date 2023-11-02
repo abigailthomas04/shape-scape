@@ -12,7 +12,7 @@ pygame.init()
 mixer.init()
 
 # load audio files
-mixer.music.load('shape-scape/audio/bg_music.mp3')
+mixer.music.load('audio/bg_music.mp3')
 
 # set volume
 mixer.music.set_volume(1)
@@ -40,14 +40,14 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('ShapeScape')
 
 # upload images
-bg = pygame.image.load('shape-scape/img/sea_bg.png')
-sand = pygame.image.load('shape-scape/img/sand.jpg')
-seaweed = pygame.image.load('shape-scape/img/seaweed.png')
-submarine = pygame.image.load('shape-scape/img/submarine.png')
-title = pygame.image.load('shape-scape/img/title.png')
-start1 = pygame.image.load('shape-scape/img/press.png')
-start2 = pygame.image.load('shape-scape/img/space_bar.png')
-start3 = pygame.image.load('shape-scape/img/start.png')
+bg = pygame.image.load('img/ocean_bg.png')
+sand = pygame.image.load('img/sand.jpg')
+seaweed = pygame.image.load('img/seaweed.png')
+submarine = pygame.image.load('img/submarine.png')
+title = pygame.image.load('img/title.png')
+start1 = pygame.image.load('img/press.png')
+start2 = pygame.image.load('img/space_bar.png')
+start3 = pygame.image.load('img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
