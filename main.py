@@ -12,7 +12,7 @@ pygame.init()
 mixer.init()
 
 # load audio files
-mixer.music.load('audio/bg_music.mp3')
+mixer.music.load('shape-scape/audio/bg_music.mp3')
 
 # set volume
 mixer.music.set_volume(1)
@@ -25,7 +25,7 @@ run = True
 screen_width = 400     # width of the entire window (x-axis)
 screen_height = 650    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
-scroll_speed = 1     # speed of the scroll
+scroll_speed = .5     # speed of the scroll
 initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
 subX = 200             # initial x coordinate of submarine
 subY = 520             # initial y coordinate of submarine
@@ -40,14 +40,14 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('ShapeScape')
 
 # upload images
-bg = pygame.image.load('img/ocean_bg.png')
-sand = pygame.image.load('img/sand.jpg')
-seaweed = pygame.image.load('img/seaweed.png')
-submarine = pygame.image.load('img/submarine.png')
-title = pygame.image.load('img/title.png')
-start1 = pygame.image.load('img/press.png')
-start2 = pygame.image.load('img/space_bar.png')
-start3 = pygame.image.load('img/start.png')
+bg = pygame.image.load('shape-scape/img/ocean_bg.png')
+sand = pygame.image.load('shape-scape/img/sand.jpg')
+seaweed = pygame.image.load('shape-scape/img/seaweed.png')
+submarine = pygame.image.load('shape-scape/img/submarine.png')
+title = pygame.image.load('shape-scape/img/title.png')
+start1 = pygame.image.load('shape-scape/img/press.png')
+start2 = pygame.image.load('shape-scape/img/space_bar.png')
+start3 = pygame.image.load('shape-scape/img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
@@ -134,6 +134,9 @@ while run:
     # draw submarine
     sub.draw()
 
+    if sub.rect.y < 17:
+        sub.rect.y = 17
+
     # player hopping
     sub.hop()
 
@@ -154,11 +157,7 @@ while run:
         screen.blit(start2, (54, 300))
         screen.blit(start3, (75, 400))
 
-    # if player goes off screen when game has started, GAME OVER
-    if starting == True:    # and submarine below off screen
-        game_over == True
-
-    if starting == True:
+    else:
 
         # scroll the background
         scroll += scroll_speed
@@ -172,6 +171,10 @@ while run:
         initial_scroll += scroll_speed
         if abs(initial_scroll) > 100:
             initial_scroll = 120
+
+        '''# if player goes off screen when game has started, GAME OVER
+    if starting == True:    # and submarine below off screen
+        game_over == True'''
     
     # update the display
     pygame.display.update()
