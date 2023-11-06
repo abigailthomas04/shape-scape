@@ -88,14 +88,11 @@ class Submarine():
 
         self.rect.y += dy
 
-        if self.rect.bottom + dy > screen_height - 70:
+        if self.rect.bottom + dy > screen_height - 80:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
-
-        #if starting == False:
-         #   gravity = 0
 
         up_arrow = pygame.key.get_pressed()
 
@@ -104,7 +101,7 @@ class Submarine():
             
             # how high player hops after pressing UP ARROW
             self.vel_y = -2
- 
+        
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
@@ -120,14 +117,15 @@ class Obstacle():
         self.rect.center = (x, y)
 
     def draw(self):
-        screen.blit(self.image, (self.rect.x + scroll, -50 + scroll))
-        screen.blit(self.image, (screen_width + self.rect.x - scroll, -100 + scroll))
-        '''if self.rect.x > screen_width - 200:
-            self.rect.x = 200'''
+
+        for i in range(2):
+
+            screen.blit(self.image, (225 * i + self.rect.x + scroll - 350, scroll - 25))
+
+            screen.blit(self.image, (225 * i + self.rect.x - scroll + 600, scroll + 200))
 
 sub = Submarine(subX, subY)
-log1 = Obstacle(0, 0)
-log2 = Obstacle(0, 0)
+log1 = Obstacle(0, 100)
 
 ### THE MAIN LOOP ###
 while run: 
@@ -138,6 +136,11 @@ while run:
 
             # break the loop
             run = False
+
+        if event.type == pygame.KEYDOWN:
+
+            # if game has begun, set starting to True
+            starting = True
 
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
@@ -155,7 +158,6 @@ while run:
     sub.draw()
 
     log1.draw()
-
 
     # stop user from going up off screen
     if sub.rect.y < 17:

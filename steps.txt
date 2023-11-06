@@ -25,5 +25,10 @@ add more levels to the game
 - we can always add more levels in the future and make this game better for out resumes even if it's after the project deadline
 
 
+### WEDNESDAY NOV. 8TH WORKING ON IT ###
 
+- generating the obstacles
+- detect collision 
+
+^^ i feel like this will be enough to get done bc these are really crucial to the game and there is not a whole lotta high priority stuff to do after completing these !!
 
