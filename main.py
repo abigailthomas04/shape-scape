@@ -134,6 +134,7 @@ while run:
     # draw submarine
     sub.draw()
 
+    # stop user from going up off screen
     if sub.rect.y < 17:
         sub.rect.y = 17
 

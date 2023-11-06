@@ -2,4 +2,7 @@ Colette and Abigail !!
 
 Here are the steps and planning for ShapeScape
 
-Step 1:
+
+By Nov. 11
+- upload obstacle images and have them continuing to generate after player passes them
+- create a game_over function so game stops if player hits obstacle 
