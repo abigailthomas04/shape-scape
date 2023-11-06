@@ -48,6 +48,7 @@ title = pygame.image.load('shape-scape/img/title.png')
 start1 = pygame.image.load('shape-scape/img/press.png')
 start2 = pygame.image.load('shape-scape/img/space_bar.png')
 start3 = pygame.image.load('shape-scape/img/start.png')
+log1 = pygame.image.load('shape-scape/img/log1.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
@@ -58,6 +59,7 @@ title = pygame.transform.scale(title, (380, 60))
 start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
+log1 = pygame.transform.scale(log1, (100, 25))
 
 # time
 clock = pygame.time.Clock()
@@ -107,7 +109,25 @@ class Submarine():
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
+class Obstacle():
+
+    def __init__(self, x, y):
+
+        self.image = log1
+        self.width = 80
+        self.height = 50
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (x, y)
+
+    def draw(self):
+        screen.blit(self.image, (self.rect.x + scroll, -50 + scroll))
+        screen.blit(self.image, (screen_width + self.rect.x - scroll, -100 + scroll))
+        '''if self.rect.x > screen_width - 200:
+            self.rect.x = 200'''
+
 sub = Submarine(subX, subY)
+log1 = Obstacle(0, 0)
+log2 = Obstacle(0, 0)
 
 ### THE MAIN LOOP ###
 while run: 
@@ -133,6 +153,9 @@ while run:
 
     # draw submarine
     sub.draw()
+
+    log1.draw()
+
 
     # stop user from going up off screen
     if sub.rect.y < 17:
