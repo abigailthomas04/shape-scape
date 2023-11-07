@@ -143,7 +143,7 @@ def game_over():    # if collision = True, call this function
     screen.blit(end, (10, 200))    
 
     # stop scrolling
-    
+    starting = False
 
 
 ### THE MAIN LOOP ###
