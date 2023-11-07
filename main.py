@@ -5,6 +5,9 @@ from pygame import *
 # import music
 from pygame import mixer
 
+# import time
+import time
+
 # initialize pygame
 pygame.init()
 
@@ -25,10 +28,10 @@ run = True
 screen_width = 400     # width of the entire window (x-axis)
 screen_height = 650    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
-scroll_speed = .5     # speed of the scroll
+scroll_speed = .15    # speed of the scroll
 initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
 subX = 200             # initial x coordinate of submarine
-subY = 520             # initial y coordinate of submarine
+subY = 590             # initial y coordinate of submarine
 hopping = False        # is player hopping or no
 game_over = False      # has player hit obstacle
 starting = False       # has player pressed SPACE BAR to start
@@ -48,7 +51,7 @@ title = pygame.image.load('shape-scape/img/title.png')
 start1 = pygame.image.load('shape-scape/img/press.png')
 start2 = pygame.image.load('shape-scape/img/space_bar.png')
 start3 = pygame.image.load('shape-scape/img/start.png')
-log1 = pygame.image.load('shape-scape/img/log1.png')
+log = pygame.image.load('shape-scape/img/log1.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (screen_width, screen_height))
@@ -59,11 +62,8 @@ title = pygame.transform.scale(title, (380, 60))
 start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
-log1 = pygame.transform.scale(log1, (100, 25))
+log = pygame.transform.scale(log, (100, 25))
 
-# time
-clock = pygame.time.Clock()
-time = clock.get_time() 
 
 # the ship
 class Submarine():
@@ -80,7 +80,11 @@ class Submarine():
     def hop(self):
 
         dy = 0
-        gravity = .15
+        gravity = .1
+
+        # time
+        clock = pygame.time.Clock()
+        time = clock.get_time() 
 
         # GRAVITY
         self.vel_y += gravity
@@ -88,11 +92,12 @@ class Submarine():
 
         self.rect.y += dy
 
-        if self.rect.bottom + dy > screen_height - 80:
+        if self.rect.bottom + dy > screen_height - 5:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
+    
 
         up_arrow = pygame.key.get_pressed()
 
@@ -100,7 +105,7 @@ class Submarine():
         if up_arrow[pygame.K_UP] == True:
             
             # how high player hops after pressing UP ARROW
-            self.vel_y = -2
+            self.vel_y = -2.
         
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
@@ -110,7 +115,7 @@ class Obstacle():
 
     def __init__(self, x, y):
 
-        self.image = log1
+        self.image = log
         self.width = 80
         self.height = 50
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -120,9 +125,11 @@ class Obstacle():
 
         for i in range(2):
 
+            # log1
             screen.blit(self.image, (225 * i + self.rect.x + scroll - 350, scroll - 25))
-
             screen.blit(self.image, (225 * i + self.rect.x - scroll + 600, scroll + 200))
+
+            # screen.blit(self.image, (i * self.rect.x - 100, self.rect.y))
 
 sub = Submarine(subX, subY)
 log1 = Obstacle(0, 100)
@@ -136,11 +143,6 @@ while run:
 
             # break the loop
             run = False
-
-        if event.type == pygame.KEYDOWN:
-
-            # if game has begun, set starting to True
-            starting = True
 
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
