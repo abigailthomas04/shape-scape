@@ -5,9 +5,6 @@ from pygame import *
 # import music
 from pygame import mixer
 
-# import time
-import time
-
 # initialize pygame
 pygame.init()
 
@@ -15,33 +12,35 @@ pygame.init()
 mixer.init()
 
 # load audio files
-mixer.music.load('shape-scape/audio/bg_music.mp3')
+bg_music = mixer.music.load('shape-scape/audio/bg_music.mp3')
+# game_over_music = mixer.music.load('shape-scape/audio/game_over_audio.mp3')
 
 # set volume
-mixer.music.set_volume(1)
-    
+bg_music_volume = mixer.music.set_volume(0.5)
+# game_over_music = mixer.music.set_volume(1)
+
 # play the music
-mixer.music.play()
+bg_music_play = mixer.music.play()
+# game_over_music_play = mixer.music.play()
+
+# CONSTANTS
+SCREEN_WIDTH = 400     # width of the entire window (x-axis)
+SCREEN_HEIGHT = 650    # height of the entire window (y-axis)
+SCROLL_SPEED = .15     # speed of the scroll
 
 # variables
-run = True
-screen_width = 400     # width of the entire window (x-axis)
-screen_height = 650    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
 sand_scroll = 0        # scroll for ocean floor to disappear and not repeat
 log_scroll = 0         # scroll for logs
-scroll_speed = .15     # speed of the scroll
 subX = 200             # initial x coordinate of submarine
 subY = 590             # initial y coordinate of submarine
-hopping = False        # is player hopping or no
-game_over = False      # has player hit obstacle
+logX = 200             # intitial x coordinate of log 
+logY = 175             # initial y coordinate of log
 starting = False       # has player pressed SPACE BAR to start
-logX = 200
-logY = 175
-collision = False
+collision = False      # has player hit obstacle
 
 # draw the screen 
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # name the screen
 pygame.display.set_caption('ShapeScape')
@@ -59,8 +58,8 @@ end = pygame.image.load('shape-scape/img/game_over_img.png')
 log = pygame.image.load('shape-scape/img/log1.png')
 
 # resize images
-bg = pygame.transform.scale(bg, (screen_width, screen_height))
-sand = pygame.transform.scale(sand, (screen_width, 100))
+bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+sand = pygame.transform.scale(sand, (SCREEN_WIDTH, 100))
 seaweed = pygame.transform.scale(seaweed, (50, 50))
 submarine = pygame.transform.scale(submarine, (80, 80))
 title = pygame.transform.scale(title, (380, 60))
@@ -85,27 +84,25 @@ class Submarine():
         self.rect.center = (x, y)
         self.vel_y = 0
 
+    # hopping function, call when player hits UP ARROW
     def hop(self):
 
         dy = 0
         gravity = .1
 
-        # time
-        clock = pygame.time.Clock()
-        time = clock.get_time() 
-
         # GRAVITY
         self.vel_y += gravity
         dy += self.vel_y
-
         self.rect.y += dy
 
-        if self.rect.bottom + dy > screen_height - 5:
+        # stopping player from fallin off bottom of screen
+        if self.rect.bottom + dy > SCREEN_HEIGHT - 5:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
-    
+        
+        # the to press
         up_arrow = pygame.key.get_pressed()
 
         # if UP ARROW is pressed, player hops up
@@ -113,11 +110,14 @@ class Submarine():
             
             # how high player hops after pressing UP ARROW
             self.vel_y = -2.
-        
+    
+    # draw the submarine in game loop   
     def draw(self):
+
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
+# the obstacles/ logs
 class Obstacle():
 
     def __init__(self, x, y):
@@ -128,24 +128,53 @@ class Obstacle():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
+    # draw the obstacles in game loop
     def draw(self):
         
+        # to the right
         screen.blit(self.image, (self.rect.x, self.rect.y))
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
+# creating instances of classes
 sub = Submarine(subX, subY)
-log1 = Obstacle(logX - 200, logY)
+log1 = Obstacle(logX - 200, logY)        # log srating on the left of screen to scroll right
+log2 = Obstacle(400 + logX, logY + 100)  # log starting on the right of the screen to scroll left
+
+# start menu function
+def start_menu():
+    
+    # draw title and start words
+    screen.blit(title, (10, 50))
+    screen.blit(start1, (120, 200))
+    screen.blit(start2, (54, 300))
+    screen.blit(start3, (75, 400))
 
 # make a game_over function
 def game_over():    # if collision = True, call this function
 
+    # BG WITH NO SCROLLING
+    # draw bg
+    screen.blit(bg, (0, 0))
+    # draw sand
+    screen.blit(sand, (0, 550))
+
+    # draw seaweed
+    # left most seaweed
+    screen.blit(seaweed, (65, 540))
+    # middle seaweed
+    screen.blit(seaweed, (235, 530))
+    # right most seaweed
+    screen.blit(seaweed, (300, 545))
+
+
+    # draw submarine
+    sub.draw()
+    sub.rect.y = 590
+
     # draw game over screen
-    screen.blit(end, (10, 200))    
+    screen.blit(end, (10, 200))
 
-    # stop scrolling
-    starting = False
-
-
+run = True
 ### THE MAIN LOOP ###
 while run: 
 
@@ -171,7 +200,8 @@ while run:
     # draw submarine
     sub.draw()
     
-    if sub.rect.colliderect(log1.rect):
+    # if player collides with obstacle
+    if sub.rect.colliderect(log1.rect) or sub.rect.colliderect(log2.rect):
         collision = True
 
     # stop user from going up off screen
@@ -189,38 +219,41 @@ while run:
     # until user presses SPACE BAR, title screen is drawn
     if starting == False:
 
-        # draw title and start words
-        screen.blit(title, (10, 50))
-        screen.blit(start1, (120, 200))
-        screen.blit(start2, (54, 300))
-        screen.blit(start3, (75, 400))
+        # call start menu
+        start_menu()
 
+    # game begins after SPACE BAR is pressed, and start menu goes away
     else:
         
         # player hopping
         sub.hop()
 
         log1.draw()
+        log2.draw()
 
         # scroll the background
-        scroll += scroll_speed
+        scroll += SCROLL_SPEED
         if abs(scroll) > 650:
             scroll = 0
 
-            if starting == True and game_over == True:
-                scroll_speed = 0
-
         # scroll the ocean floor off screen
-        sand_scroll += scroll_speed
+        sand_scroll += SCROLL_SPEED
         if abs(sand_scroll) > 100:
             sand_scroll = 120
 
+        # to the left
         log1.rect.x += 1
         if log1.rect.x > 500:
             log1.rect.x = -100
 
+        # to the right
+        log2.rect.x -= 1
+        if log2.rect.x < -100:
+            log2.rect.x = 700
+
     if collision == True:
-        print("GAME OVER")
+
+        # call game over function
         game_over()
         # GOT COLLISION DETECTED 3
 
