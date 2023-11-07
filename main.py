@@ -28,13 +28,17 @@ run = True
 screen_width = 400     # width of the entire window (x-axis)
 screen_height = 650    # height of the entire window (y-axis)
 scroll = 0             # scroll for the bg
-scroll_speed = .15    # speed of the scroll
-initial_scroll = 0     # scroll for ocean floor to disappear and not repeat
+sand_scroll = 0        # scroll for ocean floor to disappear and not repeat
+log_scroll = 0         # scroll for logs
+scroll_speed = .15     # speed of the scroll
 subX = 200             # initial x coordinate of submarine
 subY = 590             # initial y coordinate of submarine
 hopping = False        # is player hopping or no
 game_over = False      # has player hit obstacle
 starting = False       # has player pressed SPACE BAR to start
+logX = 200
+logY = 175
+collision = False
 
 # draw the screen 
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -50,7 +54,8 @@ submarine = pygame.image.load('shape-scape/img/submarine.png')
 title = pygame.image.load('shape-scape/img/title.png')
 start1 = pygame.image.load('shape-scape/img/press.png')
 start2 = pygame.image.load('shape-scape/img/space_bar.png')
-start3 = pygame.image.load('shape-scape/img/start.png')
+start3 = pygame.image.load('shape-scape/img/to_start.png')
+end = pygame.image.load('shape-scape/img/game_over_img.png')
 log = pygame.image.load('shape-scape/img/log1.png')
 
 # resize images
@@ -62,8 +67,11 @@ title = pygame.transform.scale(title, (380, 60))
 start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
 start3 = pygame.transform.scale(start3, (256, 40))
+end = pygame.transform.scale(end, (380, 60))
 log = pygame.transform.scale(log, (100, 25))
 
+# hide mouse cursor
+pygame.mouse.set_visible(False)
 
 # the ship
 class Submarine():
@@ -98,7 +106,6 @@ class Submarine():
             self.vey_y = 0
             self.rect.y = subY
     
-
         up_arrow = pygame.key.get_pressed()
 
         # if UP ARROW is pressed, player hops up
@@ -109,30 +116,35 @@ class Submarine():
         
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 class Obstacle():
 
     def __init__(self, x, y):
 
         self.image = log
-        self.width = 80
-        self.height = 50
+        self.width = 100
+        self.height = 25
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
     def draw(self):
-
-        for i in range(2):
-
-            # log1
-            screen.blit(self.image, (225 * i + self.rect.x + scroll - 350, scroll - 25))
-            screen.blit(self.image, (225 * i + self.rect.x - scroll + 600, scroll + 200))
-
-            # screen.blit(self.image, (i * self.rect.x - 100, self.rect.y))
+        
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 sub = Submarine(subX, subY)
-log1 = Obstacle(0, 100)
+log1 = Obstacle(logX - 200, logY)
+
+# make a game_over function
+def game_over():    # if collision = True, call this function
+
+    # draw game over screen
+    screen.blit(end, (10, 200))    
+
+    # stop scrolling
+    
+
 
 ### THE MAIN LOOP ###
 while run: 
@@ -154,27 +166,25 @@ while run:
     screen.blit(bg, (0, scroll - 650))
 
     # draw sand
-    screen.blit(sand, (0, 550 + initial_scroll))
+    screen.blit(sand, (0, 550 + sand_scroll))
 
     # draw submarine
     sub.draw()
-
-    log1.draw()
+    
+    if sub.rect.colliderect(log1.rect):
+        collision = True
 
     # stop user from going up off screen
     if sub.rect.y < 17:
         sub.rect.y = 17
 
-    # player hopping
-    sub.hop()
-
     # draw seaweed
     # left most seaweed
-    screen.blit(seaweed, (65, 540 + initial_scroll))
+    screen.blit(seaweed, (65, 540 + sand_scroll))
     # middle seaweed
-    screen.blit(seaweed, (235, 530 + initial_scroll))
+    screen.blit(seaweed, (235, 530 + sand_scroll))
     # right most seaweed
-    screen.blit(seaweed, (300, 545 + initial_scroll))
+    screen.blit(seaweed, (300, 545 + sand_scroll))
 
     # until user presses SPACE BAR, title screen is drawn
     if starting == False:
@@ -186,6 +196,11 @@ while run:
         screen.blit(start3, (75, 400))
 
     else:
+        
+        # player hopping
+        sub.hop()
+
+        log1.draw()
 
         # scroll the background
         scroll += scroll_speed
@@ -196,14 +211,19 @@ while run:
                 scroll_speed = 0
 
         # scroll the ocean floor off screen
-        initial_scroll += scroll_speed
-        if abs(initial_scroll) > 100:
-            initial_scroll = 120
+        sand_scroll += scroll_speed
+        if abs(sand_scroll) > 100:
+            sand_scroll = 120
 
-        '''# if player goes off screen when game has started, GAME OVER
-    if starting == True:    # and submarine below off screen
-        game_over == True'''
-    
+        log1.rect.x += 1
+        if log1.rect.x > 500:
+            log1.rect.x = -100
+
+    if collision == True:
+        print("GAME OVER")
+        game_over()
+        # GOT COLLISION DETECTED 3
+
     # update the display
     pygame.display.update()
 
