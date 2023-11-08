@@ -78,6 +78,10 @@ log = pygame.transform.scale(log, (100, 25))
 # hide mouse cursor
 pygame.mouse.set_visible(False)
 
+
+# time stuff
+time = pygame.time.get_ticks()
+
 # the ship
 class Submarine():
 
@@ -102,7 +106,7 @@ class Submarine():
         self.rect.y += dy
 
         # stopping player from fallin off bottom of screen
-        if self.rect.bottom + dy > SCREEN_HEIGHT - 5:
+        if self.rect.bottom + dy > SCREEN_HEIGHT - 5 and time < 5000 and starting == True:
 
             dy = 0
             self.vey_y = 0
@@ -137,9 +141,8 @@ class Obstacle():
 
     # draw the obstacles in game loop
     def draw(self):
-        for i in range(3):
-        # to the right
-            screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        screen.blit(self.image, (self.rect.x, self.rect.y))
 
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
@@ -159,9 +162,6 @@ init()
 
 # creating instances of classes
 sub = Submarine(subX, subY)
-'''log1 = Obstacle(logX - 300, logY + 50)        # log starting on the left of screen to scroll right
-log2 = Obstacle(400 + logX, logY + 100)  # log starting on the right of the screen to scroll left
-log3 = Obstacle(logX - 200, logY - 150)'''
 
 # start menu function
 def start_menu():
