@@ -166,7 +166,6 @@ def game_over():    # if collision = True, call this function
     # right most seaweed
     screen.blit(seaweed, (300, 545))
 
-
     # draw submarine
     sub.draw()
     sub.rect.y = 590
@@ -262,3 +261,5 @@ while run:
 
 # quit the window
 pygame.quit()
+
+### FIGURE OUT PLAY AGAIN ### 
