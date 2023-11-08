@@ -6,7 +6,10 @@ from pygame import *
 from pygame import mixer
 
 # import time
+import time
 
+# import random
+import random
 
 # initialize pygame
 pygame.init()
@@ -119,7 +122,7 @@ class Submarine():
 
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-
+obstacles = []
 # the obstacles/ logs
 class Obstacle():
 
@@ -130,19 +133,35 @@ class Obstacle():
         self.height = 25
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
+        self.speed = 1
 
     # draw the obstacles in game loop
     def draw(self):
-        
+        for i in range(3):
         # to the right
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+            screen.blit(self.image, (self.rect.x, self.rect.y))
+
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+
+    def move(self):
+        self.rect.x += self.speed
+        if self.rect.x > SCREEN_WIDTH:
+            obstacles.append(Obstacle(0, random.randint(0, SCREEN_WIDTH)))
+            
+
+def init():
+    obstacles.append(Obstacle(0, 0))
+
+log = Obstacle(0, random.randint(25, SCREEN_WIDTH))
+
+
+init()
 
 # creating instances of classes
 sub = Submarine(subX, subY)
-log1 = Obstacle(logX - 300, logY + 50)        # log starting on the left of screen to scroll right
+'''log1 = Obstacle(logX - 300, logY + 50)        # log starting on the left of screen to scroll right
 log2 = Obstacle(400 + logX, logY + 100)  # log starting on the right of the screen to scroll left
-log3 = Obstacle(logX - 200, logY - 150)
+log3 = Obstacle(logX - 200, logY - 150)'''
 
 # start menu function
 def start_menu():
@@ -156,26 +175,31 @@ def start_menu():
 # make a game_over function
 def game_over():    # if collision = True, call this function
 
-    # BG WITH NO SCROLLING
-    # draw bg
-    screen.blit(bg, (0, 0))
-    # draw sand
-    screen.blit(sand, (0, 550))
+    while True:
+        # BG WITH NO SCROLLING
+        # draw bg
+        screen.blit(bg, (0, 0))
+        # draw sand
+        screen.blit(sand, (0, 550))
 
-    # draw seaweed
-    # left most seaweed
-    screen.blit(seaweed, (65, 540))
-    # middle seaweed
-    screen.blit(seaweed, (235, 530))
-    # right most seaweed
-    screen.blit(seaweed, (300, 545))
+        # draw seaweed
+        # left most seaweed
+        screen.blit(seaweed, (65, 540))
+        # middle seaweed
+        screen.blit(seaweed, (235, 530))
+        # right most seaweed
+        screen.blit(seaweed, (300, 545))
 
-    # draw submarine
-    sub.draw()
-    sub.rect.y = 590
+        # draw submarine
+        sub.draw()
+        sub.rect.y = subY
 
-    # draw game over screen
-    screen.blit(end, (10, 200))
+
+        # draw game over screen
+        screen.blit(end, (10, 200))
+
+        if starting == True:
+            break
 
 run = True
 ### THE MAIN LOOP ###
@@ -204,7 +228,7 @@ while run:
     sub.draw()
     
     # if player collides with obstacle
-    if sub.rect.colliderect(log1.rect) or sub.rect.colliderect(log2.rect):
+    if sub.rect.colliderect(log):
         collision = True
 
     # stop user from going up off screen
@@ -231,9 +255,8 @@ while run:
         # player hopping
         sub.hop()
 
-        log1.draw()
-        log2.draw()
-        log3.draw()
+        log.move()
+        log.draw()
 
         # scroll the background
         scroll += SCROLL_SPEED
@@ -245,32 +268,9 @@ while run:
         if abs(sand_scroll) > 100:
             sand_scroll = 120
 
-        # moving log1 to the right
-        log1.rect.x += 1
-        if log1.rect.x > 500:
-            log1.rect.x = -100
-
-        ### LOG 2
-        # moving log2 to the left
-        log2.rect.x -= 1
-        if log2.rect.x < -100:
-            log2.rect.x = 700
-
-        # moving log2 down
-        log2.rect.y += 1
-        if log2.rect.y > SCREEN_HEIGHT:
-            log2.rect.y = 0
-
-        ### LOG 3
-        # moving log3 to the right
-        log3.rect.x += 1
-        if log3.rect.x > 500:
-            log3.rect.x = -100
-
-        log3.rect.y += 1
-        if log3.rect.y > SCREEN_HEIGHT:
-            log3.rect.y = logY - 150
-
+        if log.rect.x > SCREEN_HEIGHT:
+            log.rect.x = -50
+ 
     if collision == True:
 
         # call game over function
