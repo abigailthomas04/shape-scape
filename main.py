@@ -5,6 +5,9 @@ from pygame import *
 # import music
 from pygame import mixer
 
+# import time
+
+
 # initialize pygame
 pygame.init()
 
@@ -137,8 +140,9 @@ class Obstacle():
 
 # creating instances of classes
 sub = Submarine(subX, subY)
-log1 = Obstacle(logX - 200, logY)        # log srating on the left of screen to scroll right
+log1 = Obstacle(logX - 300, logY + 50)        # log starting on the left of screen to scroll right
 log2 = Obstacle(400 + logX, logY + 100)  # log starting on the right of the screen to scroll left
+log3 = Obstacle(logX - 200, logY - 150)
 
 # start menu function
 def start_menu():
@@ -229,6 +233,7 @@ while run:
 
         log1.draw()
         log2.draw()
+        log3.draw()
 
         # scroll the background
         scroll += SCROLL_SPEED
@@ -240,15 +245,31 @@ while run:
         if abs(sand_scroll) > 100:
             sand_scroll = 120
 
-        # to the left
+        # moving log1 to the right
         log1.rect.x += 1
         if log1.rect.x > 500:
             log1.rect.x = -100
 
-        # to the right
+        ### LOG 2
+        # moving log2 to the left
         log2.rect.x -= 1
         if log2.rect.x < -100:
             log2.rect.x = 700
+
+        # moving log2 down
+        log2.rect.y += 1
+        if log2.rect.y > SCREEN_HEIGHT:
+            log2.rect.y = 0
+
+        ### LOG 3
+        # moving log3 to the right
+        log3.rect.x += 1
+        if log3.rect.x > 500:
+            log3.rect.x = -100
+
+        log3.rect.y += 1
+        if log3.rect.y > SCREEN_HEIGHT:
+            log3.rect.y = logY - 150
 
     if collision == True:
 
