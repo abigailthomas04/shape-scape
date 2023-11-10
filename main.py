@@ -98,7 +98,7 @@ class Submarine():
 
         ### PRESS UP ARROW TO HOP ###
         up_arrow = pygame.key.get_pressed()
-        if up_arrow[pygame.K_UP] == True:
+        if up_arrow[pygame.K_SPACE] == True:
             self.vel_y = -2.
     
     ### DRAW SUBMARINE ###   
@@ -191,7 +191,6 @@ def game_start():
 
         sub.draw()
         
-            
         # stop user from going up off screen
         if sub.rect.y < 17:
             sub.rect.y = 17
@@ -225,7 +224,7 @@ def game_over():
     screen.blit(seaweed, (300, 545))
 
     ### SUB AT STARTING POSITION ###
-    sub.rect.y = 590
+    sub.rect.bottom = subY
     ### DRAW SUBMARINE ###
     sub.draw()
     
@@ -250,6 +249,8 @@ while run:
         collision = False
         starting = True
         game_end = False
+        
+        print(time)
         if collision == False and fell_off == False:
             game_start()
 
@@ -289,7 +290,7 @@ while run:
             sand_scroll = 0
             print("COLLISION")
             game_over()
-        if sub.rect.y > SCREEN_HEIGHT + 80:
+        if sub.rect.top > SCREEN_HEIGHT + 80:
             collision = False
             fell_off = True
             game_end = True
