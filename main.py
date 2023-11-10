@@ -44,6 +44,8 @@ logX = 200             # intitial x coordinate of log
 logY = 175             # initial y coordinate of log
 starting = False       # has player pressed SPACE BAR to start
 collision = False      # has player hit obstacle
+game_end = False       # game over boolean
+
 
 # draw the screen 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -170,8 +172,10 @@ def start_menu():
 
 # make a game_over function
 def game_over():    # if collision = True, call this function
+    global game_end
 
-    while True:
+    game_over = True
+    while game_end:
         # BG WITH NO SCROLLING
         # draw bg
         screen.blit(bg, (0, 0))
@@ -193,6 +197,7 @@ def game_over():    # if collision = True, call this function
 
         # draw game over screen
         screen.blit(end, (10, 200))
+        # press space to restart image !!!!
 
         if starting == True:
             break
@@ -201,16 +206,24 @@ run = True
 ### THE MAIN LOOP ###
 while run: 
 
-        
     # time stuff
     time = pygame.time.get_ticks()
 
-    # if user clicks exit window, game quits
     for event in pygame.event.get():
+         # if user clicks exit window, game quits
         if event.type == pygame.QUIT:
-
             # break the loop
             run = False
+
+        # if user restarts game by pressing SPACE BAR
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE and game_end == True:
+            # reset conditions
+                # creating instances of classes
+                # sub = Submarine(subX, subY)
+                starting = True
+
+
 
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
@@ -272,7 +285,7 @@ while run:
             log.rect.x = -50
  
     if collision == True:
-
+        game_end = True
         # call game over function
         game_over()
         # GOT COLLISION DETECTED 3
