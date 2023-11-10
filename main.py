@@ -170,60 +170,75 @@ def start_menu():
     screen.blit(start2, (54, 300))
     screen.blit(start3, (75, 400))
 
+def game_start():
+        
+    # stop user from going up off screen
+    if sub.rect.y < 17:
+        sub.rect.y = 17
+    
+    # player hopping
+    sub.hop()
+
+    log.move()
+    log.draw()
+
+    if log.rect.x > SCREEN_HEIGHT:
+        log.rect.x = -50
+
+    if collision == True or sub.rect.y > SCREEN_HEIGHT + 50:     # if collsion is detected OR if player falls off bottom of screen
+        # call game over function
+        game_over()
+        
+
 # make a game_over function
 def game_over():    # if collision = True, call this function
     global game_end
 
     sub.rect.y = subY    # stop eplayer from falling off screen during game over screen
 
-    while game_end:
-        # BG WITH NO SCROLLING
-        # draw bg
-        screen.blit(bg, (0, 0))
-        # draw sand
-        screen.blit(sand, (0, 550))
+    # BG WITH NO SCROLLING
+    # draw bg
+    screen.blit(bg, (0, 0))
+    # draw sand
+    screen.blit(sand, (0, 550))
 
-        # draw seaweed
-        # left most seaweed
-        screen.blit(seaweed, (65, 540))
-        # middle seaweed
-        screen.blit(seaweed, (235, 530))
-        # right most seaweed
-        screen.blit(seaweed, (300, 545))
+    # draw seaweed
+    # left most seaweed
+    screen.blit(seaweed, (65, 540))
+    # middle seaweed
+    screen.blit(seaweed, (235, 530))
+    # right most seaweed
+    screen.blit(seaweed, (300, 545))
 
-        # draw submarine
-        sub.draw()
-        sub.rect.y = subY
+    # draw submarine
+    sub.draw()
+    sub.rect.y = subY
 
-
-        # draw game over screen
-        screen.blit(end, (10, 200))
-        # press space to restart image !!!!
-
-        restart = pygame.key.get_pressed()
-        if (restart[K_RSHIFT]) == True:
-            print("Right shift is pressed")
-            game_end = False
-
+    # draw game over screen
+    screen.blit(end, (10, 200))
+    # press space to restart image !!!!
 
 run = True
 ### THE MAIN LOOP ###
 while run: 
 
-    
-
+    # EVENTS
     for event in pygame.event.get():
          # if user clicks exit window, game quits
         if event.type == pygame.QUIT:
             # break the loop
             run = False
 
-    # check for user to press SPACE BAR
-    pressed = pygame.key.get_pressed()
-    if (pressed[K_SPACE]) == True:
-        starting = True
+        if event.type == pygame.KEYUP:
+            restart = pygame.key.get_pressed()
+            if (restart[K_SPACE]) == True:
+                game_end = False
+                print(game_end)
 
-    ### INITIAL BG (behind the start menu), GAME NOT YET STARTED ###
+
+    #############################################
+    ### INITIAL BG , GAME NOT YET STARTED ###
+    # (behind the start menu)
     # draw background
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 650))
@@ -234,15 +249,6 @@ while run:
     # draw submarine
     sub.draw()
 
-    # if player collides with obstacle
-    if sub.rect.colliderect(log):
-        collision = True
-        game_end = True
-
-    # stop user from going up off screen
-    if sub.rect.y < 17:
-        sub.rect.y = 17
-
     # draw seaweed
     # left most seaweed
     screen.blit(seaweed, (65, 540 + sand_scroll))
@@ -250,24 +256,24 @@ while run:
     screen.blit(seaweed, (235, 530 + sand_scroll))
     # right most seaweed
     screen.blit(seaweed, (300, 545 + sand_scroll))
+    ##############################################
 
-    # until user presses SPACE BAR, title screen is drawn
-    if starting == False:
+    # check for user to press SPACE BAR to start playing game
+    pressed = pygame.key.get_pressed()
+    if (pressed[K_SPACE]) == True:
+        starting = True
 
+    # until user presses SPACE BAR, title screen/ start menu is drawn
+    if starting == False and game_end == False:
         # call start menu
         start_menu()
 
     # game begins after SPACE BAR is pressed, and start menu goes away
     else:
+
+        game_start()
         # time stuff
         time = pygame.time.get_ticks()
-        print(time)
-        
-        # player hopping
-        sub.hop()
-
-        log.move()
-        log.draw()
 
         # scroll the background
         scroll += SCROLL_SPEED
@@ -276,17 +282,15 @@ while run:
 
         # scroll the ocean floor off screen
         sand_scroll += SCROLL_SPEED
-        if abs(sand_scroll) > 100:
+        if abs(sand_scroll) > 120:
             sand_scroll = 120
 
-        if log.rect.x > SCREEN_HEIGHT:
-            log.rect.x = -50
- 
-    if collision == True:
-        # call game over function
-        game_end = True
-        game_over()
-        # GOT COLLISION DETECTED 3
+    # if player collides with obstacle
+        if sub.rect.colliderect(log):
+            collision = True
+            game_end = True
+            starting = False
+            game_over()
 
     # update the display
     pygame.display.update()
