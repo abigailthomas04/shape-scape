@@ -12,6 +12,10 @@ mixer.init()
 ### HIDE MOUSE CURSOR ###
 pygame.mouse.set_visible(False)
 
+### DEFINE A FONT ANF COLOR FOR TEXT ###
+font = pygame.font.SysFont('Bauhaus 93', 60)
+white = ((255, 255, 255))
+
 ########### AUDIO UPLOADING, VOLUME, AND PLAYING ############
 bg_music = mixer.music.load('shape-scape/audio/bg_music.mp3')
 # game_over_music = mixer.music.load('shape-scape/audio/game_over_audio.mp3')
@@ -39,6 +43,7 @@ starting = False       # has player pressed SPACE BAR to start
 collision = False      # collision boolean
 game_end = False       # game over boolean
 fell_off = False       # fell off the screen boolean
+score = 0              # score !
 
 ################### DRAW SCREEN AND NAME IT ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -144,9 +149,14 @@ init()     # idk bro
 ### CREATE INSTANCE OF SUBMARINE ###
 sub = Submarine(subX, subY)
 
+################ THE TEXT ################
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
+##########################################
+
 ################### THE START MENU ###########################
 def start_menu():
-    print("start menu NOT YET STARTED")
     #############################################
     ### INITIAL BG , GAME NOT YET STARTED ###
     # (behind the start menu)
@@ -174,7 +184,6 @@ def start_menu():
 
 ######################## GAME START ##########################
 def game_start():
-    print("game playing")
     if game_end == False:
         ### BG WITH NO SCROLLING ###
         ### OCEAN BG ### 
@@ -210,7 +219,6 @@ def game_start():
 def game_over():
     global game_end     # idk
 
-    print("GAME OVER SCREEN")
     ### BG WITH NO SCROLLING ###
     ### OCEAN BG ### 
     screen.blit(bg, (0, 0))
@@ -227,6 +235,8 @@ def game_over():
     sub.rect.bottom = subY
     ### DRAW SUBMARINE ###
     sub.draw()
+
+    draw_text(str(score // 5000), font, white, 20, 20)
     
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
@@ -249,7 +259,7 @@ while run:
         collision = False
         starting = True
         game_end = False
-        
+        score = 0
         print(time)
         if collision == False and fell_off == False:
             game_start()
@@ -268,8 +278,10 @@ while run:
     elif starting == True:
 
         game_start()
-        # time stuff
         time = pygame.time.get_ticks()
+        draw_text(str(score // 5000), font, white, 20, 20)
+        score += time // 1000
+ 
 
         # scroll the background
         scroll += SCROLL_SPEED
@@ -288,7 +300,6 @@ while run:
             starting = False
             scroll = 0
             sand_scroll = 0
-            print("COLLISION")
             game_over()
         if sub.rect.top > SCREEN_HEIGHT + 80:
             collision = False
@@ -297,7 +308,6 @@ while run:
             starting = False
             scroll = 0
             sand_scroll = 0
-            print("FELL OFF")
             game_over()
 
     # update the display
