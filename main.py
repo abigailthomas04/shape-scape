@@ -78,10 +78,6 @@ log = pygame.transform.scale(log, (100, 25))
 # hide mouse cursor
 pygame.mouse.set_visible(False)
 
-
-# time stuff
-time = pygame.time.get_ticks()
-
 # the ship
 class Submarine():
 
@@ -106,12 +102,12 @@ class Submarine():
         self.rect.y += dy
 
         # stopping player from fallin off bottom of screen
-        if self.rect.bottom + dy > SCREEN_HEIGHT - 5 and time < 5000 and starting == True:
+        if self.rect.bottom + dy > SCREEN_HEIGHT - 5 and time < 5000:
 
             dy = 0
             self.vey_y = 0
             self.rect.y = subY
-        
+
         # the to press
         up_arrow = pygame.key.get_pressed()
 
@@ -204,6 +200,10 @@ def game_over():    # if collision = True, call this function
 run = True
 ### THE MAIN LOOP ###
 while run: 
+
+        
+    # time stuff
+    time = pygame.time.get_ticks()
 
     # if user clicks exit window, game quits
     for event in pygame.event.get():
