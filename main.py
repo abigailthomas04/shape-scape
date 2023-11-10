@@ -174,7 +174,8 @@ def start_menu():
 def game_over():    # if collision = True, call this function
     global game_end
 
-    game_over = True
+    sub.rect.y = subY    # stop eplayer from falling off screen during game over screen
+
     while game_end:
         # BG WITH NO SCROLLING
         # draw bg
@@ -199,15 +200,17 @@ def game_over():    # if collision = True, call this function
         screen.blit(end, (10, 200))
         # press space to restart image !!!!
 
-        if starting == True:
-            break
+        restart = pygame.key.get_pressed()
+        if (restart[K_RSHIFT]) == True:
+            print("Right shift is pressed")
+            game_end = False
+
 
 run = True
 ### THE MAIN LOOP ###
 while run: 
 
-    # time stuff
-    time = pygame.time.get_ticks()
+    
 
     for event in pygame.event.get():
          # if user clicks exit window, game quits
@@ -215,21 +218,12 @@ while run:
             # break the loop
             run = False
 
-        # if user restarts game by pressing SPACE BAR
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE and game_end == True:
-            # reset conditions
-                # creating instances of classes
-                # sub = Submarine(subX, subY)
-                starting = True
-
-
-
     # check for user to press SPACE BAR
     pressed = pygame.key.get_pressed()
     if (pressed[K_SPACE]) == True:
         starting = True
 
+    ### INITIAL BG (behind the start menu), GAME NOT YET STARTED ###
     # draw background
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 650))
@@ -239,10 +233,11 @@ while run:
 
     # draw submarine
     sub.draw()
-    
+
     # if player collides with obstacle
     if sub.rect.colliderect(log):
         collision = True
+        game_end = True
 
     # stop user from going up off screen
     if sub.rect.y < 17:
@@ -264,6 +259,9 @@ while run:
 
     # game begins after SPACE BAR is pressed, and start menu goes away
     else:
+        # time stuff
+        time = pygame.time.get_ticks()
+        print(time)
         
         # player hopping
         sub.hop()
@@ -285,8 +283,8 @@ while run:
             log.rect.x = -50
  
     if collision == True:
-        game_end = True
         # call game over function
+        game_end = True
         game_over()
         # GOT COLLISION DETECTED 3
 
