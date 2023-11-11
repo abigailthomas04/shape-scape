@@ -321,14 +321,11 @@ while run:
 
         ##################### SCORE TRACKER #####################
         if game_end == True:
-            log.rect.x = 0
             if score > hi_score:
-                hi_score = score
-                print("hi-score is:", hi_score)
-                score = 0
-            else:
-                print("hi-score is: ", score)
-                score = 0
+                hi_score = score                
+            score = 0  
+            log.rect.x = 0
+            log.rect.y = 0              
             draw_text(str("Hi-Score: "), font, white, 75, 300)
             draw_text(str(hi_score), font, white, 275, 300)
         ##########################################################
