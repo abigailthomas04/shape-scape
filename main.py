@@ -34,16 +34,16 @@ SCROLL_SPEED = .15     # speed of the scroll
 # variables
 scroll = 0             # scroll for the bg
 sand_scroll = 0        # scroll for ocean floor to disappear and not repeat
-log_scroll = 0         # scroll for logs
 subX = 200             # initial x coordinate of submarine
 subY = 590             # initial y coordinate of submarine
 logX = 200             # intitial x coordinate of log 
 logY = 175             # initial y coordinate of log
-starting = False       # has player pressed SPACE BAR to start
+starting = False       # start playing boolean
 collision = False      # collision boolean
 game_end = False       # game over boolean
 fell_off = False       # fell off the screen boolean
-score = 0              # score !
+score = 1000           # score !
+hi_score = 0           # hi-score !
 
 ################### DRAW SCREEN AND NAME IT ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -96,10 +96,10 @@ class Submarine():
         self.rect.y += dy
 
         ### STOP PLAYER FROM FALLING OFF SCREEN FOR FIRST 5 SECONDS ###
-        if self.rect.bottom + dy > SCREEN_HEIGHT - 5 and time < 5000:
+        '''if self.rect.bottom + dy > SCREEN_HEIGHT - 5:
             dy = 0
             self.vey_y = 0
-            self.rect.y = subY
+            self.rect.y = subY'''
 
         ### PRESS UP ARROW TO HOP ###
         up_arrow = pygame.key.get_pressed()
@@ -109,7 +109,7 @@ class Submarine():
     ### DRAW SUBMARINE ###   
     def draw(self):
         screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ##############################################################
         
 ### LIST FOR OBSTACLES ###
@@ -121,8 +121,9 @@ class Obstacle():
         self.image = log
         self.width = 100
         self.height = 25
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
+        for i in range(3):
+            self.rect = pygame.Rect(0, 0, self.width, self.height)
+            self.rect.center = (x, y)
         self.speed = 1
 
     ### DRAW OBSTACLES ###
@@ -237,14 +238,13 @@ def game_over():
     sub.draw()
 
     draw_text(str(score // 5000), font, white, 20, 20)
-    
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
-
 ##############################################################
 
-run = True
+
 ### THE MAIN LOOP ###
+run = True
 while run: 
 
     # EVENTS
@@ -259,8 +259,6 @@ while run:
         collision = False
         starting = True
         game_end = False
-        score = 0
-        print(time)
         if collision == False and fell_off == False:
             game_start()
 
@@ -279,9 +277,8 @@ while run:
 
         game_start()
         time = pygame.time.get_ticks()
-        draw_text(str(score // 5000), font, white, 20, 20)
+        draw_text(str(score // 1000), font, white, 20, 20)
         score += time // 1000
- 
 
         # scroll the background
         scroll += SCROLL_SPEED
@@ -310,10 +307,13 @@ while run:
             sand_scroll = 0
             game_over()
 
+        if game_end == True:
+            print(score)
+            if score > hi_score:
+                hi_score = score
+                print(hi_score)
     # update the display
     pygame.display.update()
 
 # quit the window
 pygame.quit()
-
-### FIGURE OUT PLAY AGAIN ### 
