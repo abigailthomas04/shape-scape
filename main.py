@@ -19,7 +19,7 @@ white = ((255, 255, 255))
 ########### AUDIO UPLOADING, VOLUME, AND PLAYING ############
 bg_music = mixer.music.load('shape-scape/audio/bg_music.mp3')
 # game_over_music = mixer.music.load('shape-scape/audio/game_over_audio.mp3')
-bg_music_volume = mixer.music.set_volume(0.5)
+bg_music_volume = mixer.music.set_volume(0)
 # game_over_music = mixer.music.set_volume(1)
 bg_music_play = mixer.music.play()
 # game_over_music_play = mixer.music.play()
@@ -29,20 +29,18 @@ bg_music_play = mixer.music.play()
 SCREEN_WIDTH = 400     # width of the entire window (x-axis)
 SCREEN_HEIGHT = 650    # height of the entire window (y-axis)
 SCROLL_SPEED = .15     # speed of the scroll
+SUB_X = 200             # initial x coordinate of submarine
+SUB_Y = 590             # initial y coordinate of submarine
 #############################################################
 
 # variables
 scroll = 0             # scroll for the bg
 sand_scroll = 0        # scroll for ocean floor to disappear and not repeat
-subX = 200             # initial x coordinate of submarine
-subY = 590             # initial y coordinate of submarine
-logX = 200             # intitial x coordinate of log 
-logY = 175             # initial y coordinate of log
 starting = False       # start playing boolean
 collision = False      # collision boolean
 game_end = False       # game over boolean
 fell_off = False       # fell off the screen boolean
-score = 0           # score !
+score = 0              # score !
 hi_score = 0           # hi-score !
 
 ################### DRAW SCREEN AND NAME IT ##################
@@ -133,16 +131,17 @@ class Obstacle():
     ### MOVE OBSTACLES ###
     def move(self):
         self.rect.x += self.speed
-        if self.rect.x > SCREEN_WIDTH:
-            obstacles.append(Obstacle(0, random.randint(0, SCREEN_WIDTH)))
+        self.rect.y += self.speed
+        # if self.rect.x > SCREEN_WIDTH:
+            # obstacles.append(Obstacle(0, random.randint(0, SCREEN_WIDTH)))
 ##############################################################
 
 ### HELP HOW TO MAKE A LIST AND APPEND THIS IS SO HARD IM JUST A GIRL ###
 ### CREATE INSTANCES OF LOGS ### 
-log1 = Obstacle(random.randint(-200, 0), random.randint(25, SCREEN_WIDTH))
+log = Obstacle(random.randint(-200, 0), random.randint(25, SCREEN_WIDTH))
 
 ### CREATE INSTANCE OF SUBMARINE ###
-sub = Submarine(subX, subY)
+sub = Submarine(SUB_X, SUB_Y)
 
 ################ THE TEXT ################
 def draw_text(text, font, text_col, x, y):
@@ -201,13 +200,14 @@ def game_start():
         ### PLAYER HOPPING ###
         sub.hop()
 
-        log1.move()
-        log1.draw()
+        log.move()
+        log.draw()
 
         ### KEEP LOG SCROLLING ###
-        if log1.rect.x > SCREEN_HEIGHT:
-            log1.rect.x = -50
-    
+        if log.rect.x > SCREEN_WIDTH:
+            log.rect.x = -50
+        if log.rect.y > SCREEN_HEIGHT:
+            log.rect.y = -50
 ##############################################################
         
 ######################### GAME OVER ##########################
@@ -227,7 +227,7 @@ def game_over():
     screen.blit(seaweed, (300, 545))
 
     ### SUB AT STARTING POSITION ###
-    sub.rect.bottom = subY
+    sub.rect.bottom = SUB_Y
     ### DRAW SUBMARINE ###
     sub.draw()
 
@@ -245,12 +245,18 @@ while run:
             ### BREAK THE LOOP ###
             run = False
 
+        ### WHEN KEY GOES UP, INCREMENT SCORE BY 1 ###
         if event.type == pygame.KEYUP:
             score += 1
+            ### IF GAME OVER, RESET SCORE ###
             if game_end == True:
                 score = 0
+        ### IF GAME OVER, PAUSE 2 SECS BEFORE PLAYER CAN RESTART ###
+        if event.type == pygame.KEYDOWN:
+            if game_end == True:
+                pygame.time.delay(2000)
 
-    ### RESTART GAME IF USER PRESSES SPACE BAR ###
+    ### IF USER PRESSES SPACE BAR, RESTART GAME ###
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
         ### RESET VARIABLES ###
@@ -294,7 +300,7 @@ while run:
 
         ######## GAME OVER CONDITIONS ########
         ###### IF SUB COLLIDES WITH LOG ######
-        if sub.rect.colliderect(log1):
+        if sub.rect.colliderect(log):
             collision = True
             fell_off = False
             game_end = True
@@ -315,6 +321,7 @@ while run:
 
         ##################### SCORE TRACKER #####################
         if game_end == True:
+            log.rect.x = 0
             if score > hi_score:
                 hi_score = score
                 print("hi-score is:", hi_score)
