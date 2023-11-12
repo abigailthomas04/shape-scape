@@ -6,7 +6,6 @@
 import pygame
 from pygame import * 
 from pygame import mixer
-import time
 import random
 
 ### INITIALIZING ###
@@ -16,8 +15,9 @@ mixer.init()
 ### HIDE MOUSE CURSOR ###
 pygame.mouse.set_visible(False)
 
-### DEFINE A FONT ANF COLOR FOR TEXT ###
+### DEFINE A FONT ###
 font = pygame.font.SysFont('Bauhaus 93', 50)
+### COLOR FOR TEXT ###
 white = ((255, 255, 255))
 
 ########### AUDIO UPLOADING, VOLUME, AND PLAYING ############
@@ -37,19 +37,20 @@ SUB_X = 200             # initial x coordinate of submarine
 SUB_Y = 590             # initial y coordinate of submarine
 #############################################################
 
-# variables
+###################### VARIABLES ############################
 scroll = 0             # scroll for the bg
-sand_scroll = 0        # scroll for ocean floor to disappear and not repeat
+sand_scroll = 0        # scroll for ocean floor 
 starting = False       # start playing boolean
-collision = False      # collision boolean
 game_end = False       # game over boolean
-fell_off = False       # fell off the screen boolean
 score = 0              # score !
 hi_score = 0           # hi-score !
+#############################################################
 
-################### DRAW SCREEN AND NAME IT ##################
+################### DRAW SCREEN, NAME IT, AND SET ICON ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('ShapeScape')
+pygame.display.set_caption('Sub Surge')
+icon = pygame.image.load('shape-scape/img/submarine.png')
+pygame.display.set_icon(icon)
 ##############################################################
 
 ############### UPLOADING AND RESIZING IMAGES ################
@@ -57,7 +58,7 @@ bg = pygame.image.load('shape-scape/img/ocean_bg.png')
 sand = pygame.image.load('shape-scape/img/sand.jpg')
 seaweed = pygame.image.load('shape-scape/img/seaweed.png')
 submarine = pygame.image.load('shape-scape/img/submarine.png')
-title = pygame.image.load('shape-scape/img/title.png')
+title = pygame.image.load('shape-scape/img/sub_surge.png')
 start1 = pygame.image.load('shape-scape/img/press.png')
 start2 = pygame.image.load('shape-scape/img/space_bar.png')
 start3 = pygame.image.load('shape-scape/img/to_start.png')
@@ -105,11 +106,9 @@ class Submarine():
     ### DRAW SUBMARINE ###   
     def draw(self):
         screen.blit(self.image, (self.rect.x , self.rect.y - 30))
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ##############################################################
-        
-### LIST FOR OBSTACLES ###
-obstacles = []
+
 #################### THE OBSTACLES CLASS #####################
 class Obstacle():
 
@@ -124,18 +123,23 @@ class Obstacle():
     ### DRAW OBSTACLES ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
     ### MOVE OBSTACLES ###
     def move(self):
+        ### MOVING THE X COORDINATE ###
         self.rect.x += self.speed
+        ### MOVING THE Y COORDINATE ###
         self.rect.y += self.speed
 ##############################################################
 
 ### HELP HOW TO MAKE A LIST AND APPEND THIS IS SO HARD IM JUST A GIRL ###
-### CREATE INSTANCES OF LOGS ### 
+### CREATE INSTANCES OF LOGS ###
+### LOG 1 INITIAL POSITION ###
 log1 = Obstacle(random.randint(-700, -600), random.randint(-25, 25))
+### LOG 2 INITIAL POSITION ###
 log2 = Obstacle(random.randint(-500, -200), random.randint(100, 200))
+### LOG 3 INITIAL POSITION ###
 log3 = Obstacle(random.randint(-100, 0), random.randint(300, 550))
 ### CREATE INSTANCE OF SUBMARINE ###
 sub = Submarine(SUB_X, SUB_Y)
@@ -166,16 +170,20 @@ def start_menu():
     sub.draw()
 
     ### TITLE SCREEN ###
+    ### SUB SURGE ###
     screen.blit(title, (10, 50))
+    ### PRESS ###
     screen.blit(start1, (120, 200))
+    ### SPACE BAR ###
     screen.blit(start2, (54, 300))
+    ### TO START ###
     screen.blit(start3, (75, 400))
 ##############################################################
 
 ######################## GAME START ##########################
 def game_start():
+    ### IF THE GAME IS NOT OVER ###
     if game_end == False:
-        # pygame.time.delay(3000) # DOESNT WORK HERE
         ############ BG WITH NO SCROLLING ############
         ### OCEAN BG ### 
         screen.blit(bg, (0, scroll))
@@ -211,29 +219,31 @@ def game_start():
         ### LOG 3 ###
         log3.draw()
         log3.move()
-        ##### KEEP LOG SCROLLING #####
+        ##### KEEP LOGS SCROLLING #####
+        ### PUT LOG1 X COORDINATE BACK ###
         if log1.rect.x > SCREEN_WIDTH:
             log1.rect.x = -500
+        ### PUT LOG1 Y COORDINATE BACK ###
         if log1.rect.y > SCREEN_HEIGHT:
             log1.rect.y = -500
-
+        ### PUT LOG2 X COORDINATE BACK ### 
         if log2.rect.x > SCREEN_WIDTH:
             log2.rect.x = -300
+        ### PUT LOG2 Y COORDINATE BACK ###
         if log2.rect.y > SCREEN_HEIGHT:
             log2.rect.y = -300
-
+        ### PUT LOG3 X COORDINATE BACK ###
         if log3.rect.x > SCREEN_WIDTH:
             log3.rect.x = -100
+        ### PUT LOG3 Y COORDINATE BACK ###
         if log3.rect.y > SCREEN_HEIGHT:
             log3.rect.y = -100
-        ###############################
+        ###########################################
 ##############################################################
         
 ######################### GAME OVER ##########################
 def game_over():
-    global game_end     # idk
-
-    ### BG WITH NO SCROLLING ###
+    ### DRAW BG WITH NO SCROLLING ###
     ### OCEAN BG ### 
     screen.blit(bg, (0, 0))
     ### SAND ###
@@ -244,8 +254,9 @@ def game_over():
     screen.blit(seaweed, (235, 530))
     ### RIGHTMOST SEAWEED ###
     screen.blit(seaweed, (300, 545))
+    ##################################
 
-    ### SUB AT STARTING POSITION ###
+    ### SET SUB AT STARTING POSITION ###
     sub.rect.bottom = SUB_Y
     ### DRAW SUBMARINE ###
     sub.draw()
@@ -253,16 +264,17 @@ def game_over():
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
 
-    ##### RESET LOG #####
+    ##### RESET LOGS FOR GAME RESTART #####
+    ### LOG 1 RESET ###
     log1.rect.x = -100
     log1.rect.y = 0
-
+    ### LOG2 RESET ###
     log2.rect.x = -150
     log2.rect.y = 0
-
+    ### LOG3 RESET ###
     log3.rect.x = -200
     log3.rect.y = 0
-    ###############################
+    #######################################
 
 ##############################################################
 
@@ -270,7 +282,7 @@ def game_over():
 run = True
 while run:
 
-    # EVENTS
+    ### HANDLING EVENTS ###
     for event in pygame.event.get():
         ### IF USER CLICKS EXIT WINDOW< GAME QUITS ###
         if event.type == pygame.QUIT:
@@ -288,14 +300,8 @@ while run:
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
         ### RESET VARIABLES ###
-        collision = False
         starting = True
         game_end = False
-
-    ### CHECK IF SPACE BAR IS PRESSED TO BEGIN GAME ###
-    pressed = pygame.key.get_pressed()
-    if (pressed[K_SPACE]) == True:
-        starting = True
 
     ########## GAME NOT YET BEGUN #############
     if starting == False and game_end == False:
@@ -307,26 +313,30 @@ while run:
         ### CALL START GAME ###
         game_start()
         ### START TIMER ###
-        time = pygame.time.get_ticks() # DOESNT WORK HERE
+        time = pygame.time.get_ticks()
         ### DRAW SCORE ###
         draw_text(str(score), font, white, 20, 20)
 
         ############# SCROLLING ##############
         ### SCROLL THE BACKGROUND ###
         scroll += SCROLL_SPEED
+        ### IF SCREEN SCROLLS OFF, RESET ###
         if abs(scroll) > 650:
             scroll = 0
         ### SCROLL OCEAN FLOOR OFF SCREEN ###
         sand_scroll += SCROLL_SPEED
+        ### IF OCEAN FLOOR SCROLLS OFF, KEEP OFF ###
         if abs(sand_scroll) > 120:
             sand_scroll = 120
         ######################################
 
-        ##################### GAME OVER CONDITIONS ######################
-        ###### IF SUB COLLIDES WITH LOG OR IF SUB FALLS OFF SCREEN ######
-        if sub.rect.colliderect(log1) or sub.rect.colliderect(log2)  or sub.rect.colliderect(log3) or sub.rect.top > SCREEN_HEIGHT + 80:
-            collision = True
-            fell_off = False
+        ##################### GAME OVER CONDITIONS #######################
+        ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
+        if sub.rect.colliderect(log1)\
+            or sub.rect.colliderect(log2)\
+            or sub.rect.colliderect(log3)\
+            or sub.rect.top > SCREEN_HEIGHT + 80:
+            ### RESET VARIABLES ###
             game_end = True
             starting = False
             scroll = 0
@@ -337,12 +347,20 @@ while run:
         ##################### SCORE TRACKER #####################
         if game_end == True:
             if score > hi_score:
-                hi_score = score                
-            score = 0  
+                hi_score = score
+            ### SET SCORE TO 0 FOR NEW GAME ###              
+            score = 0
+            ### RESET LOGS POSITIONS ###
+            ### LOG1 ###
             log1.rect.x = 0
-            log1.rect.y = 0        
+            log1.rect.y = 0
+            ### LOG2 ###       
             log2.rect.x = 0
-            log2.rect.y = 0      
+            log2.rect.y = 0
+            ### LOG3 ### 
+            log3.rect.x = 0
+            log3.rect.y = 0 
+            ### DRAW HIGH SCORE ###    
             draw_text(str("Hi-Score: "), font, white, 75, 300)
             draw_text(str(hi_score), font, white, 275, 300)
         ##########################################################
