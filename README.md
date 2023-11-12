@@ -1,5 +1,6 @@
 SUB SURGE
- Final project for CSC 1980 and CSC 2280
+
+Final project for CSC 1980 and CSC 2280
 
  DIRECTIONS:
  - Click the space bar to start game
