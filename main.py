@@ -21,7 +21,7 @@ font = pygame.font.SysFont('Bauhaus 93', 50)
 white = ((255, 255, 255))
 
 ########### AUDIO UPLOADING, VOLUME, AND PLAYING ############
-bg_music = mixer.music.load('shape-scape/audio/bg_music.mp3')
+bg_music = mixer.music.load('sub-surge/audio/bg_music.mp3')
 # game_over_music = mixer.music.load('shape-scape/audio/game_over_audio.mp3')
 bg_music_volume = mixer.music.set_volume(0)
 # game_over_music = mixer.music.set_volume(1)
@@ -49,21 +49,21 @@ hi_score = 0           # hi-score !
 ################### DRAW SCREEN, NAME IT, AND SET ICON ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sub Surge')
-icon = pygame.image.load('shape-scape/img/submarine.png')
+icon = pygame.image.load('sub-surge/img/submarine.png')
 pygame.display.set_icon(icon)
 ##############################################################
 
 ############### UPLOADING AND RESIZING IMAGES ################
-bg = pygame.image.load('shape-scape/img/ocean_bg.png')
-sand = pygame.image.load('shape-scape/img/sand.jpg')
-seaweed = pygame.image.load('shape-scape/img/seaweed.png')
-submarine = pygame.image.load('shape-scape/img/submarine.png')
-title = pygame.image.load('shape-scape/img/sub_surge.png')
-start1 = pygame.image.load('shape-scape/img/press.png')
-start2 = pygame.image.load('shape-scape/img/space_bar.png')
-start3 = pygame.image.load('shape-scape/img/to_start.png')
-end = pygame.image.load('shape-scape/img/game_over_img.png')
-log = pygame.image.load('shape-scape/img/log1.png')
+bg = pygame.image.load('sub-surge/img/ocean_bg.png')
+sand = pygame.image.load('sub-surge/img/sand.jpg')
+seaweed = pygame.image.load('sub-surge/img/seaweed.png')
+submarine = pygame.image.load('sub-surge/img/submarine.png')
+title = pygame.image.load('sub-surge/img/sub_surge.png')
+start1 = pygame.image.load('sub-surge/img/press.png')
+start2 = pygame.image.load('sub-surge/img/space_bar.png')
+start3 = pygame.image.load('sub-surge/img/to_start.png')
+end = pygame.image.load('sub-surge/img/game_over_img.png')
+log = pygame.image.load('sub-surge/img/log1.png')
 
 bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 sand = pygame.transform.scale(sand, (SCREEN_WIDTH, 100))
