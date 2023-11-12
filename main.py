@@ -1,3 +1,7 @@
+####################################################
+### Please refer to the README for directions :) ###
+####################################################
+
 ### IMPORTING NECCESSARY LIBRARIES ###
 import pygame
 from pygame import * 
@@ -28,7 +32,7 @@ bg_music_play = mixer.music.play()
 ######################### CONSTANTS #########################
 SCREEN_WIDTH = 400     # width of the entire window (x-axis)
 SCREEN_HEIGHT = 650    # height of the entire window (y-axis)
-SCROLL_SPEED = .15     # speed of the scroll
+SCROLL_SPEED = .2     # speed of the scroll
 SUB_X = 200             # initial x coordinate of submarine
 SUB_Y = 590             # initial y coordinate of submarine
 #############################################################
@@ -75,12 +79,12 @@ log = pygame.transform.scale(log, (100, 25))
 ###################### THE SHIP CLASS ########################
 class Submarine():
 
-    def __init__(self, x, y):
+    def __init__(self, SUB_X, SUB_Y):
         self.image = submarine
         self.width = 80
-        self.height = 50
+        self.height = 45
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
+        self.rect.center = (SUB_X, SUB_Y)
         self.vel_y = 0
 
     ### HOPPING ###
@@ -93,12 +97,6 @@ class Submarine():
         dy += self.vel_y
         self.rect.y += dy
 
-        ### STOP PLAYER FROM FALLING OFF SCREEN FOR FIRST 5 SECONDS ###
-        '''if self.rect.bottom + dy > SCREEN_HEIGHT - 5:
-            dy = 0
-            self.vey_y = 0
-            self.rect.y = subY'''
-
         ### PRESS UP ARROW TO HOP ###
         up_arrow = pygame.key.get_pressed()
         if up_arrow[pygame.K_SPACE] == True:
@@ -106,8 +104,8 @@ class Submarine():
     
     ### DRAW SUBMARINE ###   
     def draw(self):
-        screen.blit(self.image, (self.rect.x - 0, self.rect.y - 20))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        screen.blit(self.image, (self.rect.x , self.rect.y - 30))
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ##############################################################
         
 ### LIST FOR OBSTACLES ###
@@ -132,14 +130,13 @@ class Obstacle():
     def move(self):
         self.rect.x += self.speed
         self.rect.y += self.speed
-        # if self.rect.x > SCREEN_WIDTH:
-            # obstacles.append(Obstacle(0, random.randint(0, SCREEN_WIDTH)))
 ##############################################################
 
 ### HELP HOW TO MAKE A LIST AND APPEND THIS IS SO HARD IM JUST A GIRL ###
 ### CREATE INSTANCES OF LOGS ### 
-log = Obstacle(random.randint(-200, 0), random.randint(25, SCREEN_WIDTH))
-
+log1 = Obstacle(random.randint(-700, -600), random.randint(-25, 25))
+log2 = Obstacle(random.randint(-500, -200), random.randint(100, 200))
+log3 = Obstacle(random.randint(-100, 0), random.randint(300, 550))
 ### CREATE INSTANCE OF SUBMARINE ###
 sub = Submarine(SUB_X, SUB_Y)
 
@@ -164,6 +161,7 @@ def start_menu():
     ### RIGHTMOST SEAWEED ###
     screen.blit(seaweed, (300, 545 + sand_scroll))
     ##############################################
+
     ### DRAW SUB ###
     sub.draw()
 
@@ -177,6 +175,7 @@ def start_menu():
 ######################## GAME START ##########################
 def game_start():
     if game_end == False:
+        # pygame.time.delay(3000) # DOESNT WORK HERE
         ############ BG WITH NO SCROLLING ############
         ### OCEAN BG ### 
         screen.blit(bg, (0, scroll))
@@ -190,24 +189,44 @@ def game_start():
         ### RIGHTMOST SEAWEED ###
         screen.blit(seaweed, (300, 545 + sand_scroll))
         ##############################################
+
+        ############## THE SUBMARINE #############
         ### DRAW SUB ###
         sub.draw()
-        
         ### STOP USER FROM GOING UP OFF SCREEN ###
         if sub.rect.y < 17:
             sub.rect.y = 17
-        
         ### PLAYER HOPPING ###
         sub.hop()
+        ##########################################
 
-        log.move()
-        log.draw()
+        ############ THE OBSTACLES ###############
+        ### CALLING THE LOG ###
+        ## LOG 1 ###
+        log1.draw()
+        log1.move()
+        ### LOG 2 ###
+        log2.draw()
+        log2.move()
+        ### LOG 3 ###
+        log3.draw()
+        log3.move()
+        ##### KEEP LOG SCROLLING #####
+        if log1.rect.x > SCREEN_WIDTH:
+            log1.rect.x = -500
+        if log1.rect.y > SCREEN_HEIGHT:
+            log1.rect.y = -500
 
-        ### KEEP LOG SCROLLING ###
-        if log.rect.x > SCREEN_WIDTH:
-            log.rect.x = -50
-        if log.rect.y > SCREEN_HEIGHT:
-            log.rect.y = -50
+        if log2.rect.x > SCREEN_WIDTH:
+            log2.rect.x = -300
+        if log2.rect.y > SCREEN_HEIGHT:
+            log2.rect.y = -300
+
+        if log3.rect.x > SCREEN_WIDTH:
+            log3.rect.x = -100
+        if log3.rect.y > SCREEN_HEIGHT:
+            log3.rect.y = -100
+        ###############################
 ##############################################################
         
 ######################### GAME OVER ##########################
@@ -233,11 +252,24 @@ def game_over():
 
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
+
+    ##### RESET LOG #####
+    log1.rect.x = -100
+    log1.rect.y = 0
+
+    log2.rect.x = -150
+    log2.rect.y = 0
+
+    log3.rect.x = -200
+    log3.rect.y = 0
+    ###############################
+
 ##############################################################
 
 ### THE MAIN LOOP ###
 run = True
-while run: 
+while run:
+
     # EVENTS
     for event in pygame.event.get():
         ### IF USER CLICKS EXIT WINDOW< GAME QUITS ###
@@ -251,11 +283,7 @@ while run:
             ### IF GAME OVER, RESET SCORE ###
             if game_end == True:
                 score = 0
-        ### IF GAME OVER, PAUSE 2 SECS BEFORE PLAYER CAN RESTART ###
-        if event.type == pygame.KEYDOWN:
-            if game_end == True:
-                pygame.time.delay(2000)
-
+        
     ### IF USER PRESSES SPACE BAR, RESTART GAME ###
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
@@ -263,10 +291,6 @@ while run:
         collision = False
         starting = True
         game_end = False
-        ### BEGIN GAME AGAIN ###
-        if collision == False and fell_off == False:
-            ### CALL START GAME ###
-            game_start()
 
     ### CHECK IF SPACE BAR IS PRESSED TO BEGIN GAME ###
     pressed = pygame.key.get_pressed()
@@ -279,11 +303,11 @@ while run:
         start_menu()
 
     ####### SPACE BAR PRESSED, GAME BEGINS #######
-    elif starting == True:
+    elif starting == True and game_end == False:
         ### CALL START GAME ###
         game_start()
         ### START TIMER ###
-        time = pygame.time.get_ticks()
+        time = pygame.time.get_ticks() # DOESNT WORK HERE
         ### DRAW SCORE ###
         draw_text(str(score), font, white, 20, 20)
 
@@ -298,9 +322,9 @@ while run:
             sand_scroll = 120
         ######################################
 
-        ######## GAME OVER CONDITIONS ########
-        ###### IF SUB COLLIDES WITH LOG ######
-        if sub.rect.colliderect(log):
+        ##################### GAME OVER CONDITIONS ######################
+        ###### IF SUB COLLIDES WITH LOG OR IF SUB FALLS OFF SCREEN ######
+        if sub.rect.colliderect(log1) or sub.rect.colliderect(log2)  or sub.rect.colliderect(log3) or sub.rect.top > SCREEN_HEIGHT + 80:
             collision = True
             fell_off = False
             game_end = True
@@ -308,24 +332,17 @@ while run:
             scroll = 0
             sand_scroll = 0
             game_over()
-        ###### IF SUB FALLS OFF SCREEN #######
-        if sub.rect.top > SCREEN_HEIGHT + 80:
-            collision = False
-            fell_off = True
-            game_end = True
-            starting = False
-            scroll = 0
-            sand_scroll = 0
-            game_over()
-        #######################################
+        #################################################################
 
         ##################### SCORE TRACKER #####################
         if game_end == True:
             if score > hi_score:
                 hi_score = score                
             score = 0  
-            log.rect.x = 0
-            log.rect.y = 0              
+            log1.rect.x = 0
+            log1.rect.y = 0        
+            log2.rect.x = 0
+            log2.rect.y = 0      
             draw_text(str("Hi-Score: "), font, white, 75, 300)
             draw_text(str(hi_score), font, white, 275, 300)
         ##########################################################
