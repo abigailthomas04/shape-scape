@@ -20,19 +20,15 @@ font = pygame.font.SysFont('Bauhaus 93', 50)
 ### COLOR FOR TEXT ###
 white = ((255, 255, 255))
 
-########### AUDIO UPLOADING, VOLUME, AND PLAYING ############
-bg_music = mixer.music.load('sub-surge/audio/bg_music.mp3')
-# game_over_music = mixer.music.load('shape-scape/audio/game_over_audio.mp3')
-bg_music_volume = mixer.music.set_volume(0)
-# game_over_music = mixer.music.set_volume(1)
-bg_music_play = mixer.music.play()
-# game_over_music_play = mixer.music.play()
+############### AUDIO UPLOADING AND VOLUME ##################
+### IF GAME IS STARTED, UPLOAD BG AUDIO AND PLAY ###
+
 #############################################################
 
 ######################### CONSTANTS #########################
-SCREEN_WIDTH = 400     # width of the entire window (x-axis)
-SCREEN_HEIGHT = 650    # height of the entire window (y-axis)
-SCROLL_SPEED = .2     # speed of the scroll
+SCREEN_WIDTH = 400      # width of the entire window (x-axis)
+SCREEN_HEIGHT = 650     # height of the entire window (y-axis)
+SCROLL_SPEED = .5      # speed of the scroll
 SUB_X = 200             # initial x coordinate of submarine
 SUB_Y = 590             # initial y coordinate of submarine
 #############################################################
@@ -40,6 +36,8 @@ SUB_Y = 590             # initial y coordinate of submarine
 ###################### VARIABLES ############################
 scroll = 0             # scroll for the bg
 sand_scroll = 0        # scroll for ocean floor 
+ocean_scroll = 0       # scroll for ocean bg
+sky_scroll = 0        # scroll for sky bg
 starting = False       # start playing boolean
 game_end = False       # game over boolean
 score = 0              # score !
@@ -51,10 +49,11 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sub Surge')
 icon = pygame.image.load('sub-surge/img/submarine.png')
 pygame.display.set_icon(icon)
-##############################################################
+#########################################################################
 
 ############### UPLOADING AND RESIZING IMAGES ################
-bg = pygame.image.load('sub-surge/img/ocean_bg.png')
+bg_ocean = pygame.image.load('sub-surge/img/ocean_bg.png')
+bg_sky = pygame.image.load('sub-surge/img/sky_bg.png')
 sand = pygame.image.load('sub-surge/img/sand.jpg')
 seaweed = pygame.image.load('sub-surge/img/seaweed.png')
 submarine = pygame.image.load('sub-surge/img/submarine.png')
@@ -65,8 +64,9 @@ start3 = pygame.image.load('sub-surge/img/to_start.png')
 end = pygame.image.load('sub-surge/img/game_over_img.png')
 log = pygame.image.load('sub-surge/img/log1.png')
 
-bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-sand = pygame.transform.scale(sand, (SCREEN_WIDTH, 100))
+bg_ocean = pygame.transform.scale(bg_ocean, (SCREEN_WIDTH, SCREEN_HEIGHT))
+bg_sky = pygame.transform.scale(bg_sky, (SCREEN_WIDTH, SCREEN_HEIGHT))
+sand = pygame.transform.scale(sand, (SCREEN_WIDTH, 150))
 seaweed = pygame.transform.scale(seaweed, (50, 50))
 submarine = pygame.transform.scale(submarine, (80, 80))
 title = pygame.transform.scale(title, (380, 60))
@@ -90,19 +90,19 @@ class Submarine():
 
     ### HOPPING ###
     def hop(self):
-        dy = 0
+        y_prime = 0
         gravity = .1
 
         ### GRAVITY ###
         self.vel_y += gravity
-        dy += self.vel_y
-        self.rect.y += dy
+        y_prime += self.vel_y
+        self.rect.y += y_prime
 
         ### PRESS UP ARROW TO HOP ###
         up_arrow = pygame.key.get_pressed()
         if up_arrow[pygame.K_SPACE] == True:
             self.vel_y = -2.
-    
+
     ### DRAW SUBMARINE ###   
     def draw(self):
         screen.blit(self.image, (self.rect.x , self.rect.y - 30))
@@ -154,16 +154,15 @@ def draw_text(text, font, text_col, x, y):
 def start_menu():
     ###### INITIAL BG , GAME NOT YET STARTED ######
     ### OCEAN BG ### 
-    screen.blit(bg, (0, scroll))
-    screen.blit(bg, (0, scroll - 650))
+    screen.blit(bg_ocean, (0, 0))
     ### SAND ###
-    screen.blit(sand, (0, 550 + sand_scroll))
+    screen.blit(sand, (0, 570))
     ### LEFTMOST SEAWEED ###
-    screen.blit(seaweed, (65, 540 + sand_scroll))
+    screen.blit(seaweed, (65, 570))
     ### MIDDLE SEAWEED ###
-    screen.blit(seaweed, (235, 530 + sand_scroll))
+    screen.blit(seaweed, (235, 580))
     ### RIGHTMOST SEAWEED ###
-    screen.blit(seaweed, (300, 545 + sand_scroll))
+    screen.blit(seaweed, (300, 575))
     ##############################################
 
     ### DRAW SUB ###
@@ -180,22 +179,22 @@ def start_menu():
     screen.blit(start3, (75, 400))
 ##############################################################
 
-######################## GAME START ##########################
-def game_start():
+######################## GAME START OCEAN LEVEL ##########################
+def game_start_ocean():
     ### IF THE GAME IS NOT OVER ###
     if game_end == False:
         ############ BG WITH NO SCROLLING ############
         ### OCEAN BG ### 
-        screen.blit(bg, (0, scroll))
-        screen.blit(bg, (0, scroll - 650))
+        screen.blit(bg_ocean, (0, ocean_scroll))
+        screen.blit(bg_ocean, (0, ocean_scroll - 650))
         ### SAND ###
-        screen.blit(sand, (0, 550 + sand_scroll))
+        screen.blit(sand, (0, 570 + sand_scroll))
         ### LEFTMOST SEAWEED ###
-        screen.blit(seaweed, (65, 540 + sand_scroll))
+        screen.blit(seaweed, (65, 570 + sand_scroll))
         ### MIDDLE SEAWEED ###
-        screen.blit(seaweed, (235, 530 + sand_scroll))
+        screen.blit(seaweed, (235, 580 + sand_scroll))
         ### RIGHTMOST SEAWEED ###
-        screen.blit(seaweed, (300, 545 + sand_scroll))
+        screen.blit(seaweed, (300, 575 + sand_scroll))
         ##############################################
 
         ############## THE SUBMARINE #############
@@ -240,20 +239,73 @@ def game_start():
             log3.rect.y = -100
         ###########################################
 ##############################################################
-        
+
+
+######################## GAME START SKY LEVEL ##########################
+def game_start_sky():
+    ############ BG WITH NO SCROLLING ############
+    ### SKY BG ###
+    screen.blit(bg_ocean, (0, ocean_scroll))
+    screen.blit(bg_sky, (0, sky_scroll - 650))
+    screen.blit(bg_sky, (0, sky_scroll - 1300))
+    ##############################################
+
+    ############## THE SUBMARINE #############
+    ### DRAW SUB ###
+    sub.draw()
+    ### STOP USER FROM GOING UP OFF SCREEN ###
+    if sub.rect.y < 17:
+        sub.rect.y = 17
+    ### PLAYER HOPPING ###
+    sub.hop()
+    ##########################################
+
+    ############ THE OBSTACLES ###############
+    ### CALLING THE LOGS ###
+    ## LOG 1 ###
+    log1.draw()
+    log1.move()
+    ### LOG 2 ###
+    log2.draw()
+    log2.move()
+    ### LOG 3 ###
+    log3.draw()
+    log3.move()
+    ##### KEEP LOGS SCROLLING #####
+    ### PUT LOG1 X COORDINATE BACK ###
+    if log1.rect.x > SCREEN_WIDTH:
+        log1.rect.x = -500
+    ### PUT LOG1 Y COORDINATE BACK ###
+    if log1.rect.y > SCREEN_HEIGHT:
+        log1.rect.y = -500
+    ### PUT LOG2 X COORDINATE BACK ### 
+    if log2.rect.x > SCREEN_WIDTH:
+        log2.rect.x = -300
+    ### PUT LOG2 Y COORDINATE BACK ###
+    if log2.rect.y > SCREEN_HEIGHT:
+        log2.rect.y = -300
+    ### PUT LOG3 X COORDINATE BACK ###
+    if log3.rect.x > SCREEN_WIDTH:
+        log3.rect.x = -100
+    ### PUT LOG3 Y COORDINATE BACK ###
+    if log3.rect.y > SCREEN_HEIGHT:
+        log3.rect.y = -100
+    ###########################################
+##############################################################
+
 ######################### GAME OVER ##########################
 def game_over():
     ### DRAW BG WITH NO SCROLLING ###
     ### OCEAN BG ### 
-    screen.blit(bg, (0, 0))
+    screen.blit(bg_ocean, (0, 0))
     ### SAND ###
-    screen.blit(sand, (0, 550))
+    screen.blit(sand, (0, 570))
     ### LEFTMOST SEAWEED ###
-    screen.blit(seaweed, (65, 540))
+    screen.blit(seaweed, (65, 570))
     ### MIDDLE SEAWEED ###
-    screen.blit(seaweed, (235, 530))
+    screen.blit(seaweed, (235, 580))
     ### RIGHTMOST SEAWEED ###
-    screen.blit(seaweed, (300, 545))
+    screen.blit(seaweed, (300, 575))
     ##################################
 
     ### SET SUB AT STARTING POSITION ###
@@ -275,27 +327,23 @@ def game_over():
     log3.rect.x = -200
     log3.rect.y = 0
     #######################################
-
 ##############################################################
 
-### THE MAIN LOOP ###
-run = True
-while run:
+### THE MAIN OCEAN LEVEL LOOP ###
+ocean_run = True
+while ocean_run:
 
     ### HANDLING EVENTS ###
     for event in pygame.event.get():
         ### IF USER CLICKS EXIT WINDOW< GAME QUITS ###
         if event.type == pygame.QUIT:
             ### BREAK THE LOOP ###
-            run = False
+            ocean_run = False
 
         ### WHEN KEY GOES UP, INCREMENT SCORE BY 1 ###
         if event.type == pygame.KEYUP:
             score += 1
-            ### IF GAME OVER, RESET SCORE ###
-            if game_end == True:
-                score = 0
-        
+
     ### IF USER PRESSES SPACE BAR, RESTART GAME ###
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
@@ -310,24 +358,20 @@ while run:
 
     ####### SPACE BAR PRESSED, GAME BEGINS #######
     elif starting == True and game_end == False:
-        ### CALL START GAME ###
-        game_start()
-        ### START TIMER ###
-        time = pygame.time.get_ticks()
+        ### CALL START GAME OCEAN LEVEL ###
+        game_start_ocean()
         ### DRAW SCORE ###
         draw_text(str(score), font, white, 20, 20)
 
         ############# SCROLLING ##############
         ### SCROLL THE BACKGROUND ###
-        scroll += SCROLL_SPEED
+        ocean_scroll += SCROLL_SPEED
         ### IF SCREEN SCROLLS OFF, RESET ###
-        if abs(scroll) > 650:
-            scroll = 0
+        if abs(ocean_scroll) > 650:
+            ocean_scroll = 0
         ### SCROLL OCEAN FLOOR OFF SCREEN ###
         sand_scroll += SCROLL_SPEED
         ### IF OCEAN FLOOR SCROLLS OFF, KEEP OFF ###
-        if abs(sand_scroll) > 120:
-            sand_scroll = 120
         ######################################
 
         ##################### GAME OVER CONDITIONS #######################
@@ -335,12 +379,13 @@ while run:
         if sub.rect.colliderect(log1)\
             or sub.rect.colliderect(log2)\
             or sub.rect.colliderect(log3)\
-            or sub.rect.top > SCREEN_HEIGHT + 80:
-            ### RESET VARIABLES ###
+            or sub.rect.top > SCREEN_HEIGHT:
+            ### CHANGE VARIABLES FOR GAME OVER ###
             game_end = True
             starting = False
-            scroll = 0
+            ocean_scroll = 0
             sand_scroll = 0
+            sky_scroll = 0
             game_over()
         #################################################################
 
@@ -350,6 +395,9 @@ while run:
                 hi_score = score
             ### SET SCORE TO 0 FOR NEW GAME ###              
             score = 0
+            ### PAUSE BG MUSIC IF GAME OVER ###
+
+            ### LOAD GAME OVER AUDIO AND PLAY FOR GAME OVER ###
             ### RESET LOGS POSITIONS ###
             ### LOG1 ###
             log1.rect.x = 0
@@ -359,11 +407,92 @@ while run:
             log2.rect.y = 0
             ### LOG3 ### 
             log3.rect.x = 0
-            log3.rect.y = 0 
+            log3.rect.y = 0
             ### DRAW HIGH SCORE ###    
             draw_text(str("Hi-Score: "), font, white, 75, 300)
             draw_text(str(hi_score), font, white, 275, 300)
         ##########################################################
+
+    ################## THE SKY LEVEL #########################
+    ### IF SCORE IS GREATER THAN 150, MOVE ON TO SKY LEVEL ###
+    if score > 5 and ocean_scroll == 0:                
+        ### THE MAIN SKY LEVEL LOOP ###
+        sky_run = True
+        while sky_run:
+
+                ### HANDLING EVENTS ###
+            for event in pygame.event.get():
+                ### IF USER CLICKS EXIT WINDOW< GAME QUITS ###
+                if event.type == pygame.QUIT:
+                    ### BREAK THE LOOP ###
+                    sky_run = False
+
+                ### WHEN KEY GOES UP, INCREMENT SCORE BY 1 ###
+                if event.type == pygame.KEYUP:
+                    score += 1
+
+            ####### THE SKY LEVEL GAME STARTING #######
+            if starting == True and game_end == False:
+                ### CALL START SKY LEVEL ###
+                game_start_sky()
+                ### DRAW SCORE ###
+                draw_text(str(score), font, white, 20, 20)
+
+                ############# SCROLLING ##############
+                ### SCROLL THE BACKGROUND ###
+                sky_scroll += SCROLL_SPEED
+                ### IF SCREEN SCROLLS OFF, RESET ###
+                if abs(sky_scroll) > 1300:
+                    sky_scroll = 650
+                ### SCROLL OCEAN AWAY ###
+                ocean_scroll += SCROLL_SPEED
+                if abs(ocean_scroll) > 650:
+                    ocean_scroll = 650
+                ######################################
+
+                ##################### GAME OVER CONDITIONS #######################
+                ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
+                if sub.rect.colliderect(log1)\
+                    or sub.rect.colliderect(log2)\
+                    or sub.rect.colliderect(log3)\
+                    or sub.rect.top > SCREEN_HEIGHT:
+                    ### CHANGE VARIABLES FOR GAME OVER ###
+                    game_end = True
+                    starting = False
+                    ocean_scroll = 0
+                    sand_scroll = 0
+                    sky_scroll = 0
+                    score = 0
+                    game_over()
+                #################################################################
+
+                ##################### SCORE TRACKER #####################
+                if game_end == True:
+                    if score > hi_score:
+                        hi_score = score
+                    ### SET SCORE TO 0 FOR NEW GAME ###              
+                    score = 0
+                    ### PAUSE BG MUSIC IF GAME OVER ###
+
+                    ### LOAD GAME OVER AUDIO AND PLAY FOR GAME OVER ###
+                    ### RESET LOGS POSITIONS ###
+                    ### LOG1 ###
+                    log1.rect.x = 0
+                    log1.rect.y = 0
+                    ### LOG2 ###       
+                    log2.rect.x = 0
+                    log2.rect.y = 0
+                    ### LOG3 ### 
+                    log3.rect.x = 0
+                    log3.rect.y = 0
+                    ### DRAW HIGH SCORE ###    
+                    draw_text(str("Hi-Score: "), font, white, 75, 300)
+                    draw_text(str(hi_score), font, white, 275, 300)
+                    break
+                ##########################################################
+            
+            ### UPDATE DISPLAY ###
+            pygame.display.update()
 
     ### UPDATE DISPLAY ###
     pygame.display.update()
