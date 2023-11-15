@@ -20,12 +20,13 @@ white = ((255, 255, 255))
 ######################### AUDIO #############################
 def bg_audio():
     pygame.mixer.music.load('sub-surge./audio/bg_music.ogg')
-    pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play()
 bg_audio()
 def game_over_audio():
     pygame.mixer.music.load('sub-surge./audio/game_over_audio.mp3')
-    pygame.mixer.music.set_volume(1)
+    pygame.mixer.music.play()
+def coin_audio():
+    pygame.mixer.music.load('sub-surge./audio/coin_audio.mp3')
     pygame.mixer.music.play()
 #############################################################
 
@@ -47,6 +48,8 @@ volume_on = True        # volume boolean
 mouse_over_mute = False # mouse over the mute btn boolean
 score = 0               # score !
 hi_score = 0            # hi-score !
+money = 0
+collect = False
 #############################################################
 
 ################### DRAW SCREEN, NAME IT, AND SET ICON ##################
@@ -71,6 +74,7 @@ mute_btn = pygame.image.load('sub-surge./img/mute_btn.png')
 end = pygame.image.load('sub-surge./img/game_over_img.png')
 log = pygame.image.load('sub-surge./img/log1.png')
 boost_up = pygame.image.load('sub-surge./img/boostup.png')
+coin = pygame.image.load('sub-surge./img/coin.png')
 
 bg_ocean = pygame.transform.scale(bg_ocean, (SCREEN_WIDTH, SCREEN_HEIGHT))
 bg_sky = pygame.transform.scale(bg_sky, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -87,6 +91,7 @@ mute_btn = pygame.transform.scale(mute_btn, (40, 40))
 end = pygame.transform.scale(end, (380, 60))
 log = pygame.transform.scale(log, (100, 25))
 boost_up = pygame.transform.scale(boost_up, (60, 100))
+coin = pygame.transform.scale(coin, (25, 25))
 ##############################################################
 
 ###################### THE SUBMARINE CLASS ########################
@@ -211,6 +216,33 @@ class Obstacle():
         self.rect.y += self.speed    
 ##############################################################
 
+##################### COIN CLASS ####################
+class Coin():
+
+    def __init__(self, x, y):
+        ### SET IMAGE TO RECTANGLE ###
+        self.image = coin
+        ### DIMENSIONS OF THE RECT ###
+        self.width = 25
+        self.height = 25
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (x, y)
+        ### SPEED OF THE COIN ###
+        ### DIFFERENT FROM THE SCROLL SPEED ###
+        self.speed = 1
+
+    ### DRAW COIN ###
+    def draw(self):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+
+    ### MOVE COIN RIGHT ###
+    def move(self):
+        ### MOVING THE X COORDINATE ###
+        self.rect.x += self.speed
+
+#####################################################
+
 class Mute():
 
     def __init__(self, x, y):
@@ -240,8 +272,10 @@ log4 = Obstacle(random.randint(SCREEN_WIDTH + 100, 1000), random.randint(0, SCRE
 ### CREATE INSTANCE OF SUBMARINE AND ITS SAIL ###
 sub = Submarine(SUB_X, SUB_Y)
 sub_sail = Sail(SUB_X - 10, SUB_Y - 25)
-
+### CREATE INSTANCE OF MUTE BTN ###
 mute = Mute(375, 30)
+
+coin = Coin(random.randint(-1000, -100), random.randint(0, 500))
 
 ##############################################################
 
@@ -253,6 +287,10 @@ def draw_text(text, font, text_col, x, y):
 
 ################### THE START MENU ###########################
 def start_menu():
+
+    ### SHOW MOUSE CURSOR ###
+    pygame.mouse.set_visible(True)
+
     ###### INITIAL BG , GAME NOT YET STARTED ######
     ### OCEAN BG ### 
     screen.blit(bg_ocean, (0, 0))
@@ -270,10 +308,9 @@ def start_menu():
 
     ### DRAW SUB ###
     sub.draw()
-
+    
+    ### DRAW MUTE BUTTON ###
     mute.draw()
-
-    # power_up.draw()
 
     ### TITLE SCREEN ###
     ### SUB SURGE ###
@@ -309,6 +346,16 @@ def game_start_ocean():
         ### POLLUTION LOL ###
         screen.blit(bottle, (35, 620 + sand_scroll))
         ##############################################
+
+        ################## THE COINS #################
+        ### DRAW COIN ###
+        coin.draw()
+        ### MOVE COIN ###
+        coin.move()
+        ### RESET COIN POSITION ###
+        if coin.rect.x > SCREEN_WIDTH:
+            coin.rect.x = random.randint(-1000, -100)
+            coin.rect.y = random.randint(0, 500)
 
         ############## THE SUBMARINE #############
         ### DRAW SUB ###
@@ -369,6 +416,9 @@ def game_start_ocean():
 ######################### GAME OVER ##########################
 def game_over():
 
+    ### SHOW MOUSE CURSOR ###
+    pygame.mouse.set_visible(True)
+
     ### DRAW BG WITH NO SCROLLING ###
     ### OCEAN BG ### 
     screen.blit(bg_ocean, (0, 0))
@@ -390,6 +440,7 @@ def game_over():
     ### DRAW SUBMARINE ###
     sub.draw()
 
+    ### DRAW MUTE BUTTON ###
     mute.draw()
 
     ### GAME OVER WORDS ###
@@ -409,8 +460,6 @@ def game_over():
     log4.rect.x = -250
     log4.rect.y = 0
     #######################################
-
-    # power_up.rect.x = -200
 ##############################################################
 
 ### THE MAIN OCEAN LEVEL LOOP ###
@@ -478,6 +527,10 @@ while ocean_run:
         ### DRAW SCORE ###
         draw_text(str(score), font, white, 20, 5)
 
+        ### DRAW MONEY ###
+        draw_text(str("$ "), font, white, 20, 55)
+        draw_text(str(money), font, white, 45, 55)
+
         ############# SCROLLING ##############
         ### SCROLL THE BACKGROUND ###
         scroll += SCROLL_SPEED
@@ -501,6 +554,11 @@ while ocean_run:
         elif score > 200:
             SCROLL_SPEED = 3
 
+        ### COLLECTING COINS ###
+        if sub.rect.colliderect(coin):
+            money += 1
+            coin_audio()
+        
         ##################### GAME OVER CONDITIONS #######################
         ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
         if sub.rect.colliderect(log1)\
@@ -550,6 +608,10 @@ while ocean_run:
             log3.rect.y = 0
             ############################
 
+            ### RESET COIN POSITION ###
+            coin.rect.x = random.randint(-1000, -100)
+            collect = False
+
             ### DRAW HIGH SCORE ###    
             draw_text(str("Score: "), font, white, 75, 300)
             draw_text(str(score), font, white, 275, 300)
@@ -559,6 +621,8 @@ while ocean_run:
 
             ### SET SCORE TO 0 FOR NEW GAME ###              
             score = 0
+            ### SET MONEY TO 0 FOR NEW GAME ###
+            money = 0
         ##########################################################
 
     ### UPDATE DISPLAY ###
