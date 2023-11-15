@@ -175,6 +175,22 @@ class Obstacle():
         ### DIFFERENT FROM THE SCROLL SPEED ###
         self.speed = 1
 
+        ### MAKE THE GAME HARDER ###
+        ### INCREASE OBSTACLE SPEED ###
+        if score > 5:
+            self.speed = 1
+        elif score > 100:
+            self.speed = 1.5
+        elif score > 150:
+            self.speed = 2
+        elif score > 200: 
+            self.speed = 3
+
+        ### IF GAME IS OVER ###
+        if game_end == True:
+            ### SET SELF SPEED BACK TO 1 ###
+            self.speed = 1
+
     ### DRAW OBSTACLES ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -192,7 +208,7 @@ class Obstacle():
         ### MOVING THE X COORDINATE ###
         self.rect.x -= self.speed
         ### MOVING THE Y COORDINATE ###
-        self.rect.y += self.speed
+        self.rect.y += self.speed    
 ##############################################################
 
 #################### OXYGEN BAR ##############################
@@ -210,46 +226,6 @@ class OxygenBar():
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
 ###############################################################
 
-'''class Boost():
-
-    def __init__(self, x, y):
-        self.image = boost_up
-        ### DIMENSIONS OF THE RECT ###
-        self.width = 20
-        self.height = 50
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.topleft = (x, y)
-        self.speed = .5
-
-    ### MOVE BOOST RIGHT ###
-    def move(self):
-        ### MOVING THE X COORDINATE ###
-        self.rect.x += self.speed
-
-    def draw(self):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-        pygame.draw.rect(screen, (255, 255,255), self.rect, 2)'''
-class MuteBtn():
-
-    def _init_(self, x, y):
-        self.image = mute_btn
-        self.width = 50
-        self.height = 100
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
-
-    def draw(self):
-
-        mute_music = False
-
-        pos = pygame.mouse.get_pos()
-
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1:
-                mute_music = True
-        
-        return mute_music
-
 ################### CREATING ALL INSTANCES ###################
 ### CREATE INSTANCES OF OBSTACLES ###
 ### LOG 1 INITIAL POSITION ###
@@ -266,8 +242,6 @@ sub_sail = Sail(SUB_X - 10, SUB_Y - 25)
 
 oxygen_bar = OxygenBar(40, 60)
 
-mute = MuteBtn(340, 40)
-# power_up = Boost(20, random.randint(100, 400))
 ##############################################################
 
 ################ THE TEXT #################
@@ -292,8 +266,6 @@ def start_menu():
     ### POLLUTION LOL ###
     screen.blit(bottle, (35, 620))
     ##############################################
-
-    mute.draw()
 
     ### DRAW SUB ###
     sub.draw()
@@ -392,15 +364,6 @@ def game_start_ocean():
         if log4.rect.y > SCREEN_HEIGHT:
             log4.rect.y = 0
         ###########################################
-
-
-        '''if score > 5:
-            power_up.draw()
-            power_up.move()
-
-            if power_up.rect.x > SCREEN_HEIGHT:
-                power_up.rect.x = 0'''
-
 ##############################################################
 
 ######################### GAME OVER ##########################
@@ -469,22 +432,6 @@ while ocean_run:
             ### INCREMENT SCORE BY 1 ### 
             score += 1
 
-        if event.type == pygame.mouse:
-            mouse_pressed = pygame.mouse.get_pressed()
-
-            mouse.x, mouse.y = pygame.mouse.get_pos()
-
-
-            '''if mouse.x > 340\
-                and mouse.x < 380\
-                and mouse.y > 20\
-                and mouse.y < 60:
-                mouse_over_mute == True
-
-                print(mouse_over_mute)
-                print(mouse.x, mouse.y)'''
-
-
     ### IF USER PRESSES SPACE BAR ###
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
@@ -525,6 +472,17 @@ while ocean_run:
         sand_scroll += SCROLL_SPEED
         ######################################
 
+        ### MAKE THE GAME HARDER ###
+        ### INCREASE BG SPEED ###
+        if score > 50:
+            SCROLL_SPEED = 1
+        elif score > 100:
+            SCROLL_SPEED = 1.5
+        elif score > 150:
+            SCROLL_SPEED = 2
+        elif score > 200:
+            SCROLL_SPEED = 3
+
         ##################### GAME OVER CONDITIONS #######################
         ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
         if sub.rect.colliderect(log1)\
@@ -543,7 +501,7 @@ while ocean_run:
                 ### RESET SCROLL POSITION ###
                 scroll = 0
                 sand_scroll = 0
-                # power_up.rect.x = 0
+                SCROLL_SPEED = 0.5
                 ### CALL GAME OVER ###
                 game_over()
                 isplaying = False
