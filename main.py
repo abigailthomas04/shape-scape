@@ -20,12 +20,12 @@ white = ((255, 255, 255))
 ######################### AUDIO #############################
 def bg_audio():
     pygame.mixer.music.load('sub-surge./audio/bg_music.ogg')
-    pygame.mixer.music.set_volume(0)
+    pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play()
 bg_audio()
 def game_over_audio():
     pygame.mixer.music.load('sub-surge./audio/game_over_audio.mp3')
-    pygame.mixer.music.set_volume(0)
+    pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play()
 #############################################################
 
@@ -43,16 +43,16 @@ sand_scroll = 0         # scroll for ocean floor
 starting = False        # start playing boolean
 game_end = False        # game over boolean
 isplaying = False       # playing audio boolean
+volume_on = True        # volume boolean
 mouse_over_mute = False # mouse over the mute btn boolean
 score = 0               # score !
 hi_score = 0            # hi-score !
-oxygen = 500
 #############################################################
 
 ################### DRAW SCREEN, NAME IT, AND SET ICON ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sub Surge')
-icon = pygame.image.load('sub-surge/img./submarine.png')
+icon = pygame.image.load('sub-surge./img/submarine.png')
 pygame.display.set_icon(icon)
 #########################################################################
 
@@ -211,20 +211,21 @@ class Obstacle():
         self.rect.y += self.speed    
 ##############################################################
 
-#################### OXYGEN BAR ##############################
-class OxygenBar():
+class Mute():
 
     def __init__(self, x, y):
+        ### SET IMAGE TO RECTANGLE ###
+        self.image = mute_btn
         ### DIMENSIONS OF THE RECT ###
-        self.width = 50
-        self.height = 100
+        self.width = 40
+        self.height = 40
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
+     ### DRAW OBSTACLES ###
     def draw(self):
-        pygame.draw.rect(screen, (255, 255, 255), self.rect)
-        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
-###############################################################
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
 ################### CREATING ALL INSTANCES ###################
 ### CREATE INSTANCES OF OBSTACLES ###
@@ -240,7 +241,7 @@ log4 = Obstacle(random.randint(SCREEN_WIDTH + 100, 1000), random.randint(0, SCRE
 sub = Submarine(SUB_X, SUB_Y)
 sub_sail = Sail(SUB_X - 10, SUB_Y - 25)
 
-oxygen_bar = OxygenBar(40, 60)
+mute = Mute(375, 30)
 
 ##############################################################
 
@@ -269,6 +270,8 @@ def start_menu():
 
     ### DRAW SUB ###
     sub.draw()
+
+    mute.draw()
 
     # power_up.draw()
 
@@ -320,9 +323,6 @@ def game_start_ocean():
         sub_sail.hop()
         ##########################################
 
-        # oxygen_bar.draw()
-        # oxygen_bar.update()
-
         ############ THE OBSTACLES ###############
         ### CALLING THE LOGS ###
         ### DRAWING AND MOVING ###
@@ -369,9 +369,6 @@ def game_start_ocean():
 ######################### GAME OVER ##########################
 def game_over():
 
-     ### HIDE MOUSE CURSOR ###
-    pygame.mouse.set_visible(False)
-
     ### DRAW BG WITH NO SCROLLING ###
     ### OCEAN BG ### 
     screen.blit(bg_ocean, (0, 0))
@@ -392,6 +389,8 @@ def game_over():
     sub_sail.rect.bottom = sub.rect.bottom - 30
     ### DRAW SUBMARINE ###
     sub.draw()
+
+    mute.draw()
 
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
@@ -431,6 +430,26 @@ while ocean_run:
         if event.type == pygame.KEYUP:
             ### INCREMENT SCORE BY 1 ### 
             score += 1
+        
+        ### MUTE AND UNMUTE MUSIC ###
+        ### GET MOUSE POSITION ###
+        pos = pygame.mouse.get_pos()
+        ### CHECK FOR MOUSE COLLISION WITH MUTE BUTTON ###
+        if mute.rect.collidepoint(pos):
+            ### IF LEFT MOUSE CLICKED ###
+            if pygame.mouse.get_pressed()[0] == 1:
+                ### IF VOLUME IS ALREADY ON ###
+                if volume_on:
+                    ### MUTE IT ###
+                    pygame.mixer.music.set_volume(0)
+                    ### CHANGE VOLUME BOOLEAN ###
+                    volume_on = False
+                ### IF VOLUME IS NOT ON ###
+                elif not volume_on:
+                    ### UNMUTE IT ###
+                    pygame.mixer.music.set_volume(1)
+                    ### CHANGE VOLUME BOOLEAN ###
+                    volume_on = True
 
     ### IF USER PRESSES SPACE BAR ###
     restart = pygame.key.get_pressed()
@@ -457,8 +476,7 @@ while ocean_run:
         game_start_ocean()
         
         ### DRAW SCORE ###
-        draw_text(str(score), font, white, 80, 20)
-        # draw_text(str(oxygen), font, white, 20, 80)
+        draw_text(str(score), font, white, 20, 5)
 
         ############# SCROLLING ##############
         ### SCROLL THE BACKGROUND ###
@@ -514,8 +532,7 @@ while ocean_run:
             if score > hi_score:
                 ### SET HI-SCORE TO SCORE ###
                 hi_score = score
-            ### SET SCORE TO 0 FOR NEW GAME ###              
-            score = 0
+            
             ### PAUSE BG MUSIC IF GAME OVER ###
 
             ### CALL GAME OVER AUDIO ###
@@ -534,8 +551,14 @@ while ocean_run:
             ############################
 
             ### DRAW HIGH SCORE ###    
-            draw_text(str("Hi-Score: "), font, white, 75, 300)
-            draw_text(str(hi_score), font, white, 275, 300)
+            draw_text(str("Score: "), font, white, 75, 300)
+            draw_text(str(score), font, white, 275, 300)
+            ### DRAW CURRENT SCORE ###
+            draw_text(str("Hi-Score: "), font, white, 75, 350)
+            draw_text(str(hi_score), font, white, 275, 350)
+
+            ### SET SCORE TO 0 FOR NEW GAME ###              
+            score = 0
         ##########################################################
 
     ### UPDATE DISPLAY ###
