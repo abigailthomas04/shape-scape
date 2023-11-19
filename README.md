@@ -8,8 +8,6 @@ To play, you will need:
 
  DIRECTIONS:
 
-A terrible storm shipwrecks the ship you were on. You were able to escape to the emergency submarine. You are the sole survivor of this shipwreck. Now the submarine is running low on oxygen and you are running out of time. Hop to the surface while avoid the shipwreck debris to survive !!
-
 - Click the space bar to start game
 - Continue clicking the space bar to hop
 - Don't just hold down the space bar....cuz that's lame

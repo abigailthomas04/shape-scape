@@ -13,20 +13,21 @@ pygame.init()
 mixer.init()
 
 ### DEFINE A FONT ###
-font = pygame.font.SysFont('Bauhaus 93', 50)
+# font = pygame.font.SysFont('Bauhaus 93', 50)
+font = pygame.font.SysFont('', 50)
 ### COLOR FOR TEXT ###
 white = ((255, 255, 255))
 
 ######################### AUDIO #############################
 def bg_audio():
-    pygame.mixer.music.load('sub-surge./audio/bg_music.ogg')
+    pygame.mixer.music.load('audio/bg_music.ogg')
     pygame.mixer.music.play()
 bg_audio()
 def game_over_audio():
-    pygame.mixer.music.load('sub-surge./audio/game_over_audio.mp3')
+    pygame.mixer.music.load('audio/game_over_audio.mp3')
     pygame.mixer.music.play()
 def coin_audio():
-    pygame.mixer.music.load('sub-surge./audio/coin_audio.mp3')
+    pygame.mixer.music.load('audio/coin_audio.mp3')
     pygame.mixer.music.play()
 #############################################################
 
@@ -46,35 +47,38 @@ game_end = False        # game over boolean
 isplaying = False       # playing audio boolean
 volume_on = True        # volume boolean
 mouse_over_mute = False # mouse over the mute btn boolean
+choose_skin = False     # user clicked to change skin boolean
+draw_skin_menu = False  # draw the skin menu boolean 
+draw_start_menu = True  # draw the star menu boolean
 score = 0               # score !
 hi_score = 0            # hi-score !
-money = 0
-collect = False
+money = 0               # money counter
 #############################################################
 
 ################### DRAW SCREEN, NAME IT, AND SET ICON ##################
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sub Surge')
-icon = pygame.image.load('sub-surge./img/submarine.png')
+icon = pygame.image.load('img/submarine.png')
 pygame.display.set_icon(icon)
 #########################################################################
 
 ############### UPLOADING AND RESIZING IMAGES ################
-bg_ocean = pygame.image.load('sub-surge./img/ocean_bg.png')
-bg_sky = pygame.image.load('sub-surge./img/sky_bg.png')
-sand = pygame.image.load('sub-surge./img/sand.jpg')
-seaweed = pygame.image.load('sub-surge./img/seaweed.png')
-bottle = pygame.image.load('sub-surge./img/bottle.png')
-submarine = pygame.image.load('sub-surge./img/submarine.png')
-title = pygame.image.load('sub-surge./img/sub_surge.png')
-start1 = pygame.image.load('sub-surge./img/press.png')
-start2 = pygame.image.load('sub-surge./img/space_bar.png')
-start3 = pygame.image.load('sub-surge./img/to_start.png')
-mute_btn = pygame.image.load('sub-surge./img/mute_btn.png')
-end = pygame.image.load('sub-surge./img/game_over_img.png')
-log = pygame.image.load('sub-surge./img/log1.png')
-boost_up = pygame.image.load('sub-surge./img/boostup.png')
-coin = pygame.image.load('sub-surge./img/coin.png')
+bg_ocean = pygame.image.load('img/ocean_bg.png')
+bg_sky = pygame.image.load('img/sky_bg.png')
+sand = pygame.image.load('img/sand.jpg')
+seaweed = pygame.image.load('img/seaweed.png')
+bottle = pygame.image.load('img/bottle.png')
+submarine = pygame.image.load('img/submarine.png')
+skin_title = pygame.image.load('img/skin_title.png')
+title = pygame.image.load('img/sub_surge.png')
+start1 = pygame.image.load('img/press.png')
+start2 = pygame.image.load('img/space_bar.png')
+start3 = pygame.image.load('img/to_start.png')
+mute_btn = pygame.image.load('img/mute_btn.png')
+end = pygame.image.load('img/game_over_img.png')
+log = pygame.image.load('img/log1.png')
+boost_up = pygame.image.load('img/boostup.png')
+coin = pygame.image.load('img/coin.png')
 
 bg_ocean = pygame.transform.scale(bg_ocean, (SCREEN_WIDTH, SCREEN_HEIGHT))
 bg_sky = pygame.transform.scale(bg_sky, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -83,6 +87,7 @@ seaweed = pygame.transform.scale(seaweed, (60, 60))
 bottle = pygame.transform.scale(bottle, (20, 60))
 bottle = pygame.transform.rotate(bottle, 90)
 submarine = pygame.transform.scale(submarine, (80, 80))
+skin_title = pygame.transform.scale(skin_title, (320, 60))
 title = pygame.transform.scale(title, (380, 60))
 start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
@@ -243,6 +248,7 @@ class Coin():
 
 #####################################################
 
+################### MUTE BUTTON ##########################
 class Mute():
 
     def __init__(self, x, y):
@@ -254,10 +260,28 @@ class Mute():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
-     ### DRAW OBSTACLES ###
+    ### DRAW MUTE BTN ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+###########################################################
+
+################## SKIN BUTTON ##########################
+class Skin():
+
+    def __init__(self, x, y):
+        ### DIMENSIONS OF THE RECT ###
+        self.width = 225
+        self.height = 35
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.topleft = (x, y)
+
+    ### DRAW SKIN BTN ###
+    def draw(self):
+        # screen.blit(self.image, (self.rect.x, self.rect.y))
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+
+###########################################################
 
 ################### CREATING ALL INSTANCES ###################
 ### CREATE INSTANCES OF OBSTACLES ###
@@ -272,11 +296,12 @@ log4 = Obstacle(random.randint(SCREEN_WIDTH + 100, 1000), random.randint(0, SCRE
 ### CREATE INSTANCE OF SUBMARINE AND ITS SAIL ###
 sub = Submarine(SUB_X, SUB_Y)
 sub_sail = Sail(SUB_X - 10, SUB_Y - 25)
+### CREATE INSTANCE OF COIN ###
+coin = Coin(random.randint(-1000, -100), random.randint(0, 500))
 ### CREATE INSTANCE OF MUTE BTN ###
 mute = Mute(375, 30)
-
-coin = Coin(random.randint(-1000, -100), random.randint(0, 500))
-
+### CREATE INSTANCE OF SKIN BTN ###
+skin = Skin(100, 450)
 ##############################################################
 
 ################ THE TEXT #################
@@ -306,6 +331,8 @@ def start_menu():
     screen.blit(bottle, (35, 620))
     ##############################################
 
+    draw_text(str("Change Skin"), font, white, 100, 450)
+
     ### DRAW SUB ###
     sub.draw()
     
@@ -321,6 +348,39 @@ def start_menu():
     screen.blit(start2, (54, 300))
     ### TO START ###
     screen.blit(start3, (75, 400))    
+##############################################################
+
+def skin_menu():
+
+    ### SHOW MOUSE CURSOR ###
+    pygame.mouse.set_visible(True)
+
+    ###### INITIAL BG , GAME NOT YET STARTED ######
+    ### OCEAN BG ### 
+    screen.blit(bg_ocean, (0, 0))
+    ### SAND ###
+    screen.blit(sand, (0, 570))
+    ### LEFTMOST SEAWEED ###
+    screen.blit(seaweed, (65, 560))
+    ### MIDDLE SEAWEED ###
+    screen.blit(seaweed, (235, 580))
+    ### RIGHTMOST SEAWEED ###
+    screen.blit(seaweed, (300, 575))
+    ### POLLUTION LOL ###
+    screen.blit(bottle, (35, 620))
+    ##############################################
+
+    ### DRAW SUB ###
+    sub.draw()
+    
+    ### DRAW MUTE BUTTON ###
+    mute.draw()
+
+    ### SKIN SCREEN ###
+    screen.blit(skin_title, (45, 50))   
+
+    ### EXIT BTN ###
+    draw_text(str("Return to Start"), font, white, 75, 450)
 ##############################################################
 
 ######################## GAME START OCEAN LEVEL ##########################
@@ -347,7 +407,7 @@ def game_start_ocean():
         screen.blit(bottle, (35, 620 + sand_scroll))
         ##############################################
 
-        ################## THE COINS #################
+        ################## THE COINS #################:
         ### DRAW COIN ###
         coin.draw()
         ### MOVE COIN ###
@@ -500,6 +560,20 @@ while ocean_run:
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
 
+        ### CHANGE SKIN OF PLAYAER ###
+        ### CHECK FOR MOUSE COLLISION WITH SKIN BUTTON ###
+        if skin.rect.collidepoint(pos):
+            ### IF LEFT MOUSE CLICKED ###
+            if pygame.mouse.get_pressed()[0] == 1 and draw_skin_menu  == False:
+                draw_skin_menu = True
+                draw_start_menu = False
+                print("skin page")
+                choose_skin = True
+            elif pygame.mouse.get_pressed()[0] == 1 and draw_skin_menu == True:
+                draw_start_menu = True
+                draw_skin_menu = False
+                print("starts page")
+
     ### IF USER PRESSES SPACE BAR ###
     restart = pygame.key.get_pressed()
     if (restart[K_SPACE]) == True:
@@ -513,9 +587,11 @@ while ocean_run:
 
     ########## GAME NOT YET BEGUN #############
     ### IF THE GAME IS NOT RUNNING/ STARTING AND GAME IS NOT OVER ###
-    if starting == False and game_end == False:
+    if starting == False and game_end == False and draw_start_menu == True:
         ### CALL START MENU ###
         start_menu()
+    if starting == False and game_end == False and draw_skin_menu == True:
+        skin_menu()
 
     ############ THE GAME RUNNING HERE ############
     ####### SPACE BAR PRESSED, GAME BEGINS #######
@@ -558,6 +634,8 @@ while ocean_run:
         if sub.rect.colliderect(coin):
             money += 1
             coin_audio()
+            ### figure out channels and stuff tehehehe ###
+
         
         ##################### GAME OVER CONDITIONS #######################
         ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
@@ -608,10 +686,6 @@ while ocean_run:
             log3.rect.y = 0
             ############################
 
-            ### RESET COIN POSITION ###
-            coin.rect.x = random.randint(-1000, -100)
-            collect = False
-
             ### DRAW HIGH SCORE ###    
             draw_text(str("Score: "), font, white, 75, 300)
             draw_text(str(score), font, white, 275, 300)
@@ -619,10 +693,13 @@ while ocean_run:
             draw_text(str("Hi-Score: "), font, white, 75, 350)
             draw_text(str(hi_score), font, white, 275, 350)
 
+            ### DRAW MONEY AMOUNT ###
+            draw_text(str("Coins: "), font, white, 75, 400)
+            draw_text(str("$"), font, white, 250, 400)
+            draw_text(str(money), font, white, 275, 400)
+
             ### SET SCORE TO 0 FOR NEW GAME ###              
             score = 0
-            ### SET MONEY TO 0 FOR NEW GAME ###
-            money = 0
         ##########################################################
 
     ### UPDATE DISPLAY ###
