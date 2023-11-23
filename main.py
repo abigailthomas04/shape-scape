@@ -105,16 +105,18 @@ class Submarine():
         ### INDEX ###
         self.index = 0
         self.counter = 0
-        for num in range(1, 5):
+        for i in range(1, 5):
             ### CHANGING FILE NAME I FEEL SO SNEAKY FOR THIS ###
-            img_not_resized = pygame.image.load(f'img/submarine{num}.png')
+            img_not_resized = pygame.image.load(f'img/submarine{i}.png')
             img = pygame.transform.scale(img_not_resized, (80, 80))
-            ### APPEND THE LIST OF IMAGES FOR MULTIPLE PLAYERS ###
+            print(i)
             self.images.append(img)
         self.image = self.images[self.index]
 
         # increment num by 1 on right arrow click, decrease by 1 if left click to go through images
         # when index reaches 5, reset to 1
+        for img in self.images:
+            screen.blit(img, (SUB_X, SUB_Y))
 
         # self.image = submarine1
 
@@ -138,9 +140,9 @@ class Submarine():
         y_prime += self.vel_y
         self.rect.y += y_prime
 
-        ### PRESS UP ARROW TO HOP ###
-        up_arrow = pygame.key.get_pressed()
-        if up_arrow[pygame.K_SPACE] == True:
+        ### PRESS SPACE BAR TO HOP ###
+        hopping = pygame.key.get_pressed()
+        if (hopping[pygame.K_SPACE]):
             ### VELOCITY OF SUBMARINE HOPPING UP ###
             self.vel_y = -2
 
@@ -198,21 +200,6 @@ class Obstacle():
         ### DIFFERENT FROM THE SCROLL SPEED ###
         self.speed = 1
 
-        ### MAKE THE GAME HARDER ###
-        ### INCREASE OBSTACLE SPEED ###
-        '''if score > 5:
-            self.speed = 1
-        elif score > 100:
-            self.speed = 1.5
-        elif score > 150:
-            self.speed = 2
-        elif score > 200: 
-            self.speed = 3
-
-        ### IF GAME IS OVER ###
-        if game_end == True:
-            ### SET SELF SPEED BACK TO 1 ###
-            self.speed = 1'''
 
     ### DRAW OBSTACLES ###
     def draw(self):
@@ -226,12 +213,40 @@ class Obstacle():
         ### MOVING THE Y COORDINATE ###
         self.rect.y += self.speed
 
+        
+        ### MAKE THE GAME HARDER ###
+        ### INCREASE OBSTACLE SPEED ###
+        if score > 50:
+            self.speed = 1.5
+        elif score > 100:
+            self.speed = 2.5
+        elif score > 150:
+            self.speed = 3.5
+        elif score > 200: 
+            self.speed = 5
+
+        ### IF GAME IS OVER ###
+        if game_end == True:
+            ### SET SELF SPEED BACK TO 1 ###
+            self.speed = 1
+
     ### MOVE OBSTACLES LEFT ###
     def move_left(self):
         ### MOVING THE X COORDINATE ###
         self.rect.x -= self.speed
         ### MOVING THE Y COORDINATE ###
         self.rect.y += self.speed    
+
+        ### MAKE THE GAME HARDER ###
+        ### INCREASE OBSTACLE SPEED ###
+        if score > 50:
+            self.speed = 1.5
+        elif score > 100:
+            self.speed = 2.5
+        elif score > 150:
+            self.speed = 3.5
+        elif score > 200: 
+            self.speed = 5
 ##############################################################
 
 ##################### COIN CLASS ####################
@@ -290,7 +305,7 @@ class Arrow_Left():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
-    ### DRAW MUTE BTN ###
+    ### DRAW LEFT ARROW ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
@@ -305,10 +320,12 @@ class Arrow_Right():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
 
-    ### DRAW MUTE BTN ###
+    ### DRAW RIGHT ARROW ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+
+
 
 
 ################### CREATING ALL INSTANCES ###################
@@ -375,11 +392,11 @@ def start_menu():
     screen.blit(start3, (75, 400))    
 
     ### DRAW ARROWS FOR CHANGING SKINS ###
-    arrow_left.draw()
-    arrow_right.draw()
+   # arrow_left.draw()
+   # arrow_right.draw()
 ##############################################################
 
-######################## GAME START OCEAN LEVEL ##########################
+#################### GAME START OCEAN LEVEL ##################
 def game_start_ocean():
 
     ### HIDE MOUSE CURSOR ###
@@ -521,8 +538,8 @@ def game_over():
     draw_text(str(money), font, white, 275, 400)
 
     ### DRAW ARROWS FOR CHANGING SKINS ###
-    arrow_left.draw()
-    arrow_right.draw()
+   # arrow_left.draw()
+   # arrow_right.draw()
 ##############################################################
 
 ### THE MAIN OCEAN LEVEL LOOP ###
@@ -554,30 +571,24 @@ while ocean_run:
                 ### IF VOLUME IS ALREADY ON ###
                 if volume_on:
                     ### MUTE IT ###
-                    pygame.mixer.music.set_volume(0)
+                    pygame.mixer.Channel(0).set_volume(0)
+                    pygame.mixer.Channel(1).set_volume(0)
+                    pygame.mixer.Channel(2).set_volume(0)
+        
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = False
                 ### IF VOLUME IS NOT ON ###
                 elif not volume_on:
                     ### UNMUTE IT ###
-                    pygame.mixer.music.set_volume(1)
+                    pygame.mixer.Channel(0).set_volume(1)
+                    pygame.mixer.Channel(1).set_volume(1)
+                    pygame.mixer.Channel(2).set_volume(0.75)
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
                 
-        ### CHECK FOR MOUSE COLLISION WITH ARROWS ###
-        ### LEFT ARROW ###
-        '''if arrow_left.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1:
-                print("left arrow clicked")
-                print(pos)
-        ### RIGHT ARROW ###
-        if arrow_right.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1:
-                print("right arrow clicked")'''
-
     ### IF USER PRESSES SPACE BAR ###
     restart = pygame.key.get_pressed()
-    if (restart[K_SPACE]) == True:
+    if (restart[K_SPACE]):
         ### RESTART GAME ###
         ### RESET BOOLEAN VALUES ###
         starting = True
@@ -589,14 +600,14 @@ while ocean_run:
 
     ########## GAME NOT YET BEGUN #############
     ### IF THE GAME IS NOT RUNNING/ STARTING AND GAME IS NOT OVER ###
-    if starting == False and game_end == False:
+    if not starting and not game_end:
         ### CALL START MENU ###
         start_menu()
 
     ############ THE GAME RUNNING HERE ############
     ####### SPACE BAR PRESSED, GAME BEGINS #######
     ### IF THE GAME IS RUNNING/ STARTING AND IS NOT GAME OVER ###
-    elif starting == True and game_end == False:
+    elif starting and not game_end:
         ### CALL START GAME OCEAN LEVEL ###
         game_start_ocean()
         
@@ -622,13 +633,13 @@ while ocean_run:
         ### MAKE THE GAME HARDER ###
         ### INCREASE BG SPEED ###
         if score > 50:
-            SCROLL_SPEED = 1
-        elif score > 100:
             SCROLL_SPEED = 1.5
+        elif score > 100:
+            SCROLL_SPEED = 2.5
         elif score > 150:
-            SCROLL_SPEED = 2
+            SCROLL_SPEED = 3.5
         elif score > 200:
-            SCROLL_SPEED = 3
+            SCROLL_SPEED = 5
 
         ### COLLECTING COINS ###
         if sub.rect.colliderect(coin):
@@ -657,7 +668,7 @@ while ocean_run:
                 SCROLL_SPEED = 0.5
                 ##################### SCORE TRACKER #####################
                 ### IF GAME IS OVER ###
-                if game_end == True:
+                if game_end:
                     ### IF SCORE IS GREATER THAN HI-SCORE ###
                     if score > hi_score:
                         ### SET HI-SCORE TO SCORE ###
