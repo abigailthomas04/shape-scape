@@ -25,6 +25,8 @@ def game_over_audio():
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('audio/game_over_audio.mp3'))
 def coin_audio():
     pygame.mixer.Channel(2).play(pygame.mixer.Sound('audio/coin_audio.mp3'))
+def power_up_sound():
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound('audio/power_up_audio.mp3'))
 #############################################################
 
 ######################### CONSTANTS #########################
@@ -35,14 +37,13 @@ SUB_X = 200             # initial x coordinate of submarine
 SUB_Y = 590             # initial y coordinate of submarine
 #############################################################
 
-###################### VARIABLES ############################
+###################### VARIABLES ###########################
 scroll = 0              # scroll for the bg
 sand_scroll = 0         # scroll for ocean floor 
 starting = False        # start playing boolean
 game_end = False        # game over boolean
 isplaying = False       # playing audio boolean
 volume_on = True        # volume boolean
-mouse_over_mute = False # mouse over the mute btn boolean
 score = 0               # score !
 hi_score = 0            # hi-score !
 money = 0               # money counter
@@ -60,9 +61,7 @@ bg_ocean = pygame.image.load('img/ocean_bg.png')
 sand = pygame.image.load('img/sand.jpg')
 seaweed = pygame.image.load('img/seaweed.png')
 bottle = pygame.image.load('img/bottle.png')
-submarine1 = pygame.image.load('img/submarine1.png')
-submarine2 = pygame.image.load('img/submarine2.png')
-skin_title = pygame.image.load('img/skin_title.png')
+submarine = pygame.image.load('img/submarine1.png')
 title = pygame.image.load('img/sub_surge.png')
 start1 = pygame.image.load('img/press.png')
 start2 = pygame.image.load('img/space_bar.png')
@@ -72,16 +71,13 @@ end = pygame.image.load('img/game_over_img.png')
 log = pygame.image.load('img/log1.png')
 boost_up = pygame.image.load('img/boostup.png')
 coin = pygame.image.load('img/coin.png')
-arrow_btn = pygame.image.load('img/arrow_btn.png')
 
 bg_ocean = pygame.transform.scale(bg_ocean, (SCREEN_WIDTH, SCREEN_HEIGHT))
 sand = pygame.transform.scale(sand, (SCREEN_WIDTH, 150))
 seaweed = pygame.transform.scale(seaweed, (60, 60))
 bottle = pygame.transform.scale(bottle, (20, 60))
 bottle = pygame.transform.rotate(bottle, 90)
-submarine1 = pygame.transform.scale(submarine1, (80, 80))
-submarine2 = pygame.transform.scale(submarine2, (80, 80))
-skin_title = pygame.transform.scale(skin_title, (320, 60))
+submarine = pygame.transform.scale(submarine, (80, 80))
 title = pygame.transform.scale(title, (380, 60))
 start1 = pygame.transform.scale(start1, (160, 40))
 start2 = pygame.transform.scale(start2, (300, 40))
@@ -89,11 +85,8 @@ start3 = pygame.transform.scale(start3, (256, 40))
 mute_btn = pygame.transform.scale(mute_btn, (40, 40))
 end = pygame.transform.scale(end, (380, 60))
 log = pygame.transform.scale(log, (100, 25))
-boost_up = pygame.transform.scale(boost_up, (60, 100))
+boost_up = pygame.transform.scale(boost_up, (25, 60))
 coin = pygame.transform.scale(coin, (25, 25))
-arrow_btn = pygame.transform.scale(arrow_btn, (50, 50))
-arrow1 = pygame.transform.rotate(arrow_btn, 0)
-arrow2 = pygame.transform.rotate(arrow_btn, 180)
 ##############################################################
 
 ###################### THE SUBMARINE CLASS ########################
@@ -101,25 +94,7 @@ class Submarine():
 
     def __init__(self, x, y):
         ### EMPTY LIST FOR IMAGES ###
-        self.images = []
-        ### INDEX ###
-        self.index = 0
-        self.counter = 0
-        for i in range(1, 5):
-            ### CHANGING FILE NAME I FEEL SO SNEAKY FOR THIS ###
-            img_not_resized = pygame.image.load(f'img/submarine{i}.png')
-            img = pygame.transform.scale(img_not_resized, (80, 80))
-            print(i)
-            self.images.append(img)
-        self.image = self.images[self.index]
-
-        # increment num by 1 on right arrow click, decrease by 1 if left click to go through images
-        # when index reaches 5, reset to 1
-        for img in self.images:
-            screen.blit(img, (SUB_X, SUB_Y))
-
-        # self.image = submarine1
-
+        self.image = submarine
         ### DIMENSIONS OF THE RECT ###
         self.width = 80
         self.height = 45
@@ -200,7 +175,6 @@ class Obstacle():
         ### DIFFERENT FROM THE SCROLL SPEED ###
         self.speed = 1
 
-
     ### DRAW OBSTACLES ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -212,17 +186,16 @@ class Obstacle():
         self.rect.x += self.speed
         ### MOVING THE Y COORDINATE ###
         self.rect.y += self.speed
-
         
         ### MAKE THE GAME HARDER ###
         ### INCREASE OBSTACLE SPEED ###
-        if score > 50:
-            self.speed = 1.5
-        elif score > 100:
+        if score > 300:
+            self.speed = 1
+        elif score > 500:
             self.speed = 2.5
-        elif score > 150:
+        elif score > 600:
             self.speed = 3.5
-        elif score > 200: 
+        elif score > 800: 
             self.speed = 5
 
         ### IF GAME IS OVER ###
@@ -239,15 +212,45 @@ class Obstacle():
 
         ### MAKE THE GAME HARDER ###
         ### INCREASE OBSTACLE SPEED ###
-        if score > 50:
-            self.speed = 1.5
-        elif score > 100:
+        if score > 300:
+            self.speed = 1
+        elif score > 500:
             self.speed = 2.5
-        elif score > 150:
+        elif score > 600:
             self.speed = 3.5
-        elif score > 200: 
+        elif score > 800: 
             self.speed = 5
 ##############################################################
+
+###################  POWER UPS  ########################
+class Powerups():
+
+    def __init__(self,x ,y):
+        ### SET IMAGE TO RECTANGLE ###
+        self.image = boost_up
+        ### DIMENSIONS OF THE RECT ###
+        self.width = 25
+        self.height = 60
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (x, y)
+        ### SPEED OF THE POWER-UPS ###
+        ### DIFFERENT FROM THE SCROLL SPEED ###
+        self.speed = 1
+
+     ### MOVE POWER-UPS RIGHT ###
+    def move(self):
+        ### MOVING THE X COORDINATE ###
+        self.rect.x += self.speed
+
+        if self.rect.x > SCREEN_WIDTH:
+            self.rect.x = random.randint(-1000, -200)
+            self.rect.y = random.randint(0, 500)
+
+    ### DRAW POWER-UPS ###
+    def draw(self):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+##########################################################
 
 ##################### COIN CLASS ####################
 class Coin():
@@ -294,40 +297,6 @@ class Mute():
         # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ###########################################################
 
-################## ARROW BUTTON ###########################
-class Arrow_Left():
-    def __init__(self, x, y):
-        ### SET IMAGE TO RECTANGLE ###
-        self.image = arrow1
-        ### DIMENSIONS OF THE RECT ###
-        self.width = 50
-        self.height = 50
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
-
-    ### DRAW LEFT ARROW ###
-    def draw(self):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-
-class Arrow_Right():
-    def __init__(self, x, y):
-        ### SET IMAGE TO RECTANGLE ###
-        self.image = arrow2
-        ### DIMENSIONS OF THE RECT ###
-        self.width = 50
-        self.height = 50
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
-
-    ### DRAW RIGHT ARROW ###
-    def draw(self):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-
-
-
-
 ################### CREATING ALL INSTANCES ###################
 ### CREATE INSTANCES OF OBSTACLES ###
 ### LOG 1 INITIAL POSITION ###
@@ -343,9 +312,8 @@ sub_sail = Sail(SUB_X - 10, SUB_Y - 25)
 coin = Coin(random.randint(-1000, -100), random.randint(0, 500))
 ### CREATE INSTANCE OF MUTE BTN ###
 mute = Mute(375, 30)
-### CREATE INSTANCES OF THE ARROW BTNS ###
-arrow_left = Arrow_Left(120, 580)
-arrow_right = Arrow_Right(270, 580)
+### CREATE INSTANCE OF POWER UP ###
+boost_up = Powerups(random.randint(-1000, -100), random.randint(100, 450))
 ##############################################################
 
 ################ THE TEXT #################
@@ -390,10 +358,6 @@ def start_menu():
     screen.blit(start2, (54, 300))
     ### TO START ###
     screen.blit(start3, (75, 400))    
-
-    ### DRAW ARROWS FOR CHANGING SKINS ###
-   # arrow_left.draw()
-   # arrow_right.draw()
 ##############################################################
 
 #################### GAME START OCEAN LEVEL ##################
@@ -429,6 +393,10 @@ def game_start_ocean():
         if coin.rect.x > SCREEN_WIDTH:
             coin.rect.x = random.randint(-1000, -100)
             coin.rect.y = random.randint(0, 500)
+
+        ### DRAW POWER_UPS ###
+        boost_up.draw()
+        boost_up.move()
 
         ############## THE SUBMARINE #############
         ### DRAW SUB ###
@@ -536,10 +504,6 @@ def game_over():
     draw_text(str("Coins: "), font, white, 75, 400)
     draw_text(str("$"), font, white, 250, 400)
     draw_text(str(money), font, white, 275, 400)
-
-    ### DRAW ARROWS FOR CHANGING SKINS ###
-   # arrow_left.draw()
-   # arrow_right.draw()
 ##############################################################
 
 ### THE MAIN OCEAN LEVEL LOOP ###
@@ -562,7 +526,7 @@ while ocean_run:
         if event.type == pygame.KEYUP:
             ### INCREMENT SCORE BY 1 ### 
             score += 1
-        
+
         ### MUTE AND UNMUTE MUSIC ###
         ### CHECK FOR MOUSE COLLISION WITH MUTE BUTTON ###
         if mute.rect.collidepoint(pos):
@@ -574,6 +538,7 @@ while ocean_run:
                     pygame.mixer.Channel(0).set_volume(0)
                     pygame.mixer.Channel(1).set_volume(0)
                     pygame.mixer.Channel(2).set_volume(0)
+                    pygame.mixer.Channel(3).set_volume(0)
         
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = False
@@ -582,7 +547,8 @@ while ocean_run:
                     ### UNMUTE IT ###
                     pygame.mixer.Channel(0).set_volume(1)
                     pygame.mixer.Channel(1).set_volume(1)
-                    pygame.mixer.Channel(2).set_volume(0.75)
+                    pygame.mixer.Channel(2).set_volume(0.5)
+                    pygame.mixer.Channel(3).set_volume(1)
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
                 
@@ -632,13 +598,13 @@ while ocean_run:
 
         ### MAKE THE GAME HARDER ###
         ### INCREASE BG SPEED ###
-        if score > 50:
+        if score > 300:
             SCROLL_SPEED = 1.5
-        elif score > 100:
+        elif score > 500:
             SCROLL_SPEED = 2.5
-        elif score > 150:
+        elif score > 600:
             SCROLL_SPEED = 3.5
-        elif score > 200:
+        elif score > 800:
             SCROLL_SPEED = 5
 
         ### COLLECTING COINS ###
@@ -646,8 +612,15 @@ while ocean_run:
             money += 1
             # play coin audio
             coin_audio()
-            ### figure out channels and stuff tehehehe ###
 
+        ### POWER UPS ###
+         ### GETTING 20+ IN SCORE BCOS OF POWER_UPS
+        if sub.rect.colliderect(boost_up):
+            # increase score
+            score += 1
+            # play power up audio
+            power_up_sound()
+            
         
         ##################### GAME OVER CONDITIONS #######################
         ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
@@ -691,6 +664,10 @@ while ocean_run:
                     log3.rect.x = random.randint(600, 800)
                     log3.rect.y = 0
                     ############################
+
+                    log1.speed = 1
+                    log2.speed = 1
+                    log3.speed = 1
 
                     ### CALL GAME OVER ###
                     game_over()
