@@ -49,12 +49,12 @@ hi_score = 0            # hi-score !
 money = 0               # money counter
 #############################################################
 
-################### DRAW SCREEN, NAME IT, AND SET ICON ##################
+########### DRAW SCREEN, NAME IT, AND SET ICON ###############
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Sub Surge')
 icon = pygame.image.load('img/submarine1.png')
 pygame.display.set_icon(icon)
-#########################################################################
+###############################################################
 
 ############### UPLOADING AND RESIZING IMAGES ################
 bg_ocean = pygame.image.load('img/ocean_bg.png')
@@ -124,7 +124,6 @@ class Submarine():
     ### DRAW SUBMARINE ###   
     def draw(self):
         screen.blit(self.image, (self.rect.x , self.rect.y - 30))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ##############################################################
 
 ###################### THE SUBMARINE SAIL CLASS ########################
@@ -178,7 +177,6 @@ class Obstacle():
     ### DRAW OBSTACLES ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
     ### MOVE OBSTACLES RIGHT ###
     def move_right(self):
@@ -189,14 +187,14 @@ class Obstacle():
         
         ### MAKE THE GAME HARDER ###
         ### INCREASE OBSTACLE SPEED ###
-        if score > 300:
-            self.speed = 1
-        elif score > 500:
-            self.speed = 2.5
+        if score > 400:
+            self.speed = 1.5
         elif score > 600:
-            self.speed = 3.5
-        elif score > 800: 
-            self.speed = 5
+            self.speed = 2
+        elif score > 800:
+            self.speed = 2.5
+        elif score > 1000: 
+            self.speed = 3
 
         ### IF GAME IS OVER ###
         if game_end == True:
@@ -212,17 +210,18 @@ class Obstacle():
 
         ### MAKE THE GAME HARDER ###
         ### INCREASE OBSTACLE SPEED ###
-        if score > 300:
-            self.speed = 1
-        elif score > 500:
-            self.speed = 2.5
+        if score > 400:
+            self.speed = 1.5
         elif score > 600:
-            self.speed = 3.5
-        elif score > 800: 
-            self.speed = 5
+            self.speed = 2
+        elif score > 800:
+            self.speed = 2.5
+        elif score > 1000: 
+            self.speed = 3
 ##############################################################
 
-###################  POWER UPS  ########################
+########################  POWER UPS  #############################
+### ITS NOT REALLY A POWER UP, ITS A SCORE BOOSTER BUT OH WELL ###
 class Powerups():
 
     def __init__(self,x ,y):
@@ -235,22 +234,23 @@ class Powerups():
         self.rect.center = (x, y)
         ### SPEED OF THE POWER-UPS ###
         ### DIFFERENT FROM THE SCROLL SPEED ###
-        self.speed = 1
+        self.speed = 1.25
 
      ### MOVE POWER-UPS RIGHT ###
     def move(self):
         ### MOVING THE X COORDINATE ###
         self.rect.x += self.speed
 
+        ### IF SCROLLS OFF SCREEN ###
         if self.rect.x > SCREEN_WIDTH:
+            ### RESET AT RANDOM POS ###
             self.rect.x = random.randint(-1000, -200)
             self.rect.y = random.randint(0, 500)
 
     ### DRAW POWER-UPS ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-##########################################################
+#################################################################
 
 ##################### COIN CLASS ####################
 class Coin():
@@ -265,18 +265,16 @@ class Coin():
         self.rect.center = (x, y)
         ### SPEED OF THE COIN ###
         ### DIFFERENT FROM THE SCROLL SPEED ###
-        self.speed = 1
+        self.speed = 1.25
 
     ### DRAW COIN ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-
+       
     ### MOVE COIN RIGHT ###
     def move(self):
         ### MOVING THE X COORDINATE ###
         self.rect.x += self.speed
-
 #####################################################
 
 ################### MUTE BUTTON ##########################
@@ -294,7 +292,6 @@ class Mute():
     ### DRAW MUTE BTN ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 ###########################################################
 
 ################### CREATING ALL INSTANCES ###################
@@ -493,6 +490,9 @@ def game_over():
     ### RESET COIN POS ###
     coin.rect.x = random.randint(-400, -100)
 
+    ### RESET POWER UP POS ###
+    boost_up.rect.x = random.randint(-1000, -100)
+
     ### DRAW HIGH SCORE ###    
     draw_text(str("Score: "), font, white, 75, 300)
     draw_text(str(score), font, white, 275, 300)
@@ -502,7 +502,6 @@ def game_over():
 
     ### DRAW MONEY AMOUNT ###
     draw_text(str("Coins: "), font, white, 75, 400)
-    draw_text(str("$"), font, white, 250, 400)
     draw_text(str(money), font, white, 275, 400)
 ##############################################################
 
@@ -547,7 +546,7 @@ while ocean_run:
                     ### UNMUTE IT ###
                     pygame.mixer.Channel(0).set_volume(1)
                     pygame.mixer.Channel(1).set_volume(1)
-                    pygame.mixer.Channel(2).set_volume(0.5)
+                    pygame.mixer.Channel(2).set_volume(0.25)
                     pygame.mixer.Channel(3).set_volume(1)
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
@@ -560,27 +559,30 @@ while ocean_run:
         starting = True
         game_end = False
         if not isplaying:
-            # resume the bg audio
+            ### RESUME  BG MUSIC ###
             pygame.mixer.Channel(0).unpause()
             isplaying = True
 
     ########## GAME NOT YET BEGUN #############
-    ### IF THE GAME IS NOT RUNNING/ STARTING AND GAME IS NOT OVER ###
+    ### IF THE GAME HAS NOT STARTED AND GAME IS NOT OVER ###
     if not starting and not game_end:
         ### CALL START MENU ###
         start_menu()
+        ### START MENU IS ONLY EVER CALLED ONE TIME ###
 
     ############ THE GAME RUNNING HERE ############
-    ####### SPACE BAR PRESSED, GAME BEGINS #######
-    ### IF THE GAME IS RUNNING/ STARTING AND IS NOT GAME OVER ###
+    ####### ONCE SPACE BAR IS PRESSED, GAME BEGINS #######
+    ### IF THE GAME HAS STARTED AND GAME IS NOT OVER ###
     elif starting and not game_end:
         ### CALL START GAME OCEAN LEVEL ###
         game_start_ocean()
         
         ### DRAW SCORE ###
+        ### IN TOP LEFT CORNER ###
         draw_text(str(score), font, white, 20, 5)
 
         ### DRAW MONEY ###
+        ### IN TOP LEFT CORNER ###
         draw_text(str("$ "), font, white, 20, 55)
         draw_text(str(money), font, white, 45, 55)
 
@@ -598,28 +600,34 @@ while ocean_run:
 
         ### MAKE THE GAME HARDER ###
         ### INCREASE BG SPEED ###
-        if score > 300:
+        ### HEHE IM EVIL ###
+        if score > 400:
             SCROLL_SPEED = 1.5
-        elif score > 500:
-            SCROLL_SPEED = 2.5
         elif score > 600:
-            SCROLL_SPEED = 3.5
+            SCROLL_SPEED = 2
         elif score > 800:
-            SCROLL_SPEED = 5
+            SCROLL_SPEED = 2.5
+        elif score > 1000:
+            SCROLL_SPEED = 3
 
-        ### COLLECTING COINS ###
+        ### COLLECTING DA COINS ###
+        ### CHECK FOR COLLISION DETECTION ###
         if sub.rect.colliderect(coin):
+            ### INCREMENT MONEY ###
             money += 1
-            # play coin audio
+            ### PLAY COIN AUDIO ###
             coin_audio()
+            if volume_on:
+                pygame.mixer.Channel(2).set_volume(0.25)
 
         ### POWER UPS ###
-         ### GETTING 20+ IN SCORE BCOS OF POWER_UPS
+        ### CHECK FOR COLLISION DETECTION ###
         if sub.rect.colliderect(boost_up):
-            # increase score
+            ### INCREMENT SCORE ###
             score += 1
-            # play power up audio
+            ### PLAY POWER UP AUDIO ###
             power_up_sound()
+            
             
         
         ##################### GAME OVER CONDITIONS #######################
