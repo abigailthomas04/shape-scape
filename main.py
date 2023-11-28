@@ -475,7 +475,7 @@ def game_over():
     ### GAME OVER WORDS ###
     screen.blit(end, (10, 200))
 
-    ##### RESET LOGS FOR GAME RESTART #####
+    ##### RESET LOGS POS #####
     ### LOG 1 RESET ###
     log1.rect.x = -100
     log1.rect.y = 0
@@ -485,7 +485,13 @@ def game_over():
     ### log3 RESET ###
     log3.rect.x = -250
     log3.rect.y = 0
-    #######################################
+    ###########################
+
+    ### RESET LOG SPEEDS ###
+    log1.speed = 1
+    log2.speed = 1
+    log3.speed = 1
+    #########################
 
     ### RESET COIN POS ###
     coin.rect.x = random.randint(-400, -100)
@@ -547,7 +553,7 @@ while ocean_run:
                     pygame.mixer.Channel(0).set_volume(1)
                     pygame.mixer.Channel(1).set_volume(1)
                     pygame.mixer.Channel(2).set_volume(0.25)
-                    pygame.mixer.Channel(3).set_volume(1)
+                    pygame.mixer.Channel(3).set_volume(1.5)
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
                 
@@ -627,9 +633,9 @@ while ocean_run:
             score += 1
             ### PLAY POWER UP AUDIO ###
             power_up_sound()
+            if volume_on:
+                pygame.mixer.Channel(3).set_volume(1.5)
             
-            
-        
         ##################### GAME OVER CONDITIONS #######################
         ###### IF SUB COLLIDES WITH LOGS OR IF SUB FALLS OFF SCREEN ######
         if sub.rect.colliderect(log1)\
@@ -655,8 +661,6 @@ while ocean_run:
                         ### SET HI-SCORE TO SCORE ###
                         hi_score = score
                     
-                    ### PAUSE BG MUSIC IF GAME OVER ###
-
                     ### CALL GAME OVER AUDIO ###
                     game_over_audio()
                     pygame.mixer.Channel(0).pause()
@@ -672,10 +676,6 @@ while ocean_run:
                     log3.rect.x = random.randint(600, 800)
                     log3.rect.y = 0
                     ############################
-
-                    log1.speed = 1
-                    log2.speed = 1
-                    log3.speed = 1
 
                     ### CALL GAME OVER ###
                     game_over()
