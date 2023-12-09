@@ -197,7 +197,7 @@ class Obstacle():
             self.speed = 3
 
         ### IF GAME IS OVER ###
-        if game_end == True:
+        if game_end:
             ### SET SELF SPEED BACK TO 1 ###
             self.speed = 1
 
@@ -244,7 +244,7 @@ class Powerups():
         ### IF SCROLLS OFF SCREEN ###
         if self.rect.x > SCREEN_WIDTH:
             ### RESET AT RANDOM POS ###
-            self.rect.x = random.randint(-1000, -200)
+            self.rect.x = random.randint(-2000, -500)
             self.rect.y = random.randint(0, 500)
 
     ### DRAW POWER-UPS ###
@@ -292,6 +292,7 @@ class Mute():
     ### DRAW MUTE BTN ###
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
+
 ###########################################################
 
 ################### CREATING ALL INSTANCES ###################
@@ -553,7 +554,7 @@ while ocean_run:
                     pygame.mixer.Channel(0).set_volume(1)
                     pygame.mixer.Channel(1).set_volume(1)
                     pygame.mixer.Channel(2).set_volume(0.25)
-                    pygame.mixer.Channel(3).set_volume(1.5)
+                    pygame.mixer.Channel(3).set_volume(2)
                     ### CHANGE VOLUME BOOLEAN ###
                     volume_on = True
                 
